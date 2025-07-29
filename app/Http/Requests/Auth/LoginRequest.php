@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+/**
+ * //hack::in web the auth make by session
+ */
 
 class LoginRequest extends FormRequest
 {

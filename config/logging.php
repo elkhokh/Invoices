@@ -65,6 +65,12 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'invoice' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/invoice.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

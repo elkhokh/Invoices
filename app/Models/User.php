@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -45,4 +46,26 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+        /**
+     * Get the user's first name. accessor and mutator make by me
+     */
+    protected function Name(): Attribute
+    {
+        //strtolower() lcfirst() ucfirst() ucwords()
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value), // accessor
+            set: fn (string $value) => lcfirst($value), // mutator
+        );
+    }
+    //     public function profile(){
+    //     //one to one relation
+    //     // return $this->hasOne(Profile::class ,'user_id','id');//or if name conventional is false
+    //     return $this->hasOne(Profile::class );
+    // }
+    // public function posts(){
+    //     //one to many relation
+    //     return $this->hasMany(Post::class);
+    // }
 }
+

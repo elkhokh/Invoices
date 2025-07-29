@@ -3,13 +3,21 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\SectionsController;
+
+Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth');
+// Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+
 
 require __DIR__.'/auth.php';
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
+Route::resource('invoices',InvoicesController::class);
+Route::resource('sections',SectionsController::class);
 
 Route::get('/{page}', [AdminController::class, 'index']);
 
@@ -24,7 +32,23 @@ Route::middleware('auth')->group(function () {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
 /************************ ********************************/
+////expect  route run all routes but are exist in expect()
+// Route::resource('mostafa',InvoicesController::class)->expect(['show','store']);
+////only route run all method exist in only()
+// Route::resource('mostafa',InvoicesController::class)->only(['create','index','destroy','edit','update']);
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });
