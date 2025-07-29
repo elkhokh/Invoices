@@ -6,8 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\SectionsController;
 
-Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth');
-// Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+// Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth');
+Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 
 
 require __DIR__.'/auth.php';

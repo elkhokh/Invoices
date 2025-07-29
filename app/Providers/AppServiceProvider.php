@@ -22,6 +22,13 @@ class AppServiceProvider extends ServiceProvider
     {
             //to solve the problem of bootstrap because the new version of laravel use telwaind
         // Paginator::useTailwind();
+    // if (request()->is('dashboard') || request()->is('invoices') || request()->is('profile')) {
+
+    //     Paginator::useTailwind();
+    // } else {
+
+    //     Paginator::useBootstrap();
+    // }
         Paginator::useBootstrap();
     }
 }

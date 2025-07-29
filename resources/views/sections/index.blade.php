@@ -155,7 +155,6 @@
     </div>
 </div>
 <!-- End Basic modal -->
-
 </div>
     <!-- edit -->
     <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -170,9 +169,10 @@
                 </div>
                 <div class="modal-body">
 
-                    <form action="sections/update" method="post" autocomplete="off">
-                        {{ method_field('patch') }}
-                        {{ csrf_field() }}
+                    <form action="{{ route('sections.update',$section->id) }}" method="POST" autocomplete="off">
+                    {{-- <form action="sections/update" method="POST" autocomplete="off"> --}}
+                    @method('PUT')
+                    @csrf
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
                             <label for="recipient-name" class="col-form-label">اسم القسم:</label>
@@ -191,7 +191,35 @@
             </div>
         </div>
     </div>
+ <!-- delete -->
+    {{-- <div class="modal" id="modaldemo9">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal-content-demo">
+                <div class="modal-header">
+                    <h6 class="modal-title">حذف القسم</h6><button aria-label="Close" class="close" data-dismiss="modal"
+                        type="button"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <form action="{{ route('section.destroy',$section->id) }}" method="post">
+                    @method('DELETE')
+                    @csrf --}}
+                    
+                {{-- <form action="sections/destroy" method="post"> --}}
+                    {{-- {{ method_field('delete') }}
+                    {{ csrf_field() }} --}}
 
+                    {{-- <div class="modal-body">
+                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
+                        <input type="hidden" name="id" id="id" value="">
+                        <input class="form-control" name="section_name" id="section_name" type="text" readonly>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                        <button type="submit" class="btn btn-danger">تاكيد</button>
+                    </div>
+            </div>
+            </form>
+        </div>
+    </div> --}}
 @endsection
 
 @section('js')

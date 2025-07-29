@@ -77,6 +77,9 @@ class SectionsController extends Controller
         //
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
 public function update(Request $request, $id)
 {
     $request->validate([
@@ -96,7 +99,7 @@ public function update(Request $request, $id)
         $section->update([
             'section_name' => $request->section_name,
             'description' => $request->description,
-            'created_by' => Auth::user()->name,
+            // 'created_by' => Auth::user()->name,
         ]);
 
         DB::commit();
@@ -110,48 +113,11 @@ public function update(Request $request, $id)
 }
 
 
-
-    /**
-     * Update the specified resource in storage.
-     */
-// public function update(Request $request, $id)
-// {
-//     $request->validate([
-//         'section_name' => 'required|string|unique:sections,section_name,' . $id,
-//         'description'  => 'required|string',
-//     ], [
-//         'section_name.required' => 'اسم القسم مطلوب',
-//         'section_name.unique'   => 'اسم القسم موجود بالفعل',
-//         'description.required'  => 'الوصف مطلوب',
-//     ]);
-
-//     $section = sections::findOrFail($id);
-
-//     DB::beginTransaction();
-
-//     try {
-//         $section->update([
-//             'section_name' => $request->section_name,
-//             'description' => $request->description,
-//             'created_by' => Auth::user()->name,
-//         ]);
-
-//         DB::commit();
-//         session()->flash('Edit', 'تم تعديل القسم بنجاح');
-//     } catch (\Exception $e) {
-//         DB::rollBack();
-//         session()->flash('error', 'حدث خطأ أثناء التعديل: ' . $e->getMessage());
-//     }
-
-//     return redirect()->back();
-// }
-
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(sections $sections)
     {
-        //
+
     }
 }
