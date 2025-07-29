@@ -24,23 +24,35 @@
 
 @section('content')
 <div class="row">
+<div class="container mt-3">
+    @if(session()->has('Add'))
+        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Add') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endif
 
-@if(session()->has('Add'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert" style="max-width: 500px;">
-                <strong>{{ session()->get('Add') }}</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        @endif
-@if(session()->has('Edit'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('Edit') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-@endif
+    @if(session()->has('Edit'))
+        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Edit') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if(session()->has('Delete'))
+        <div class="alert alert-danger alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Delete') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+</div>
+
 
     <div class="col-xl-12">
         <div class="card mg-b-20">
@@ -191,25 +203,26 @@
             </div>
         </div>
     </div>
+
  <!-- delete -->
-    {{-- <div class="modal" id="modaldemo9">
+    <div class="modal" id="modaldemo9">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
                 <div class="modal-header">
                     <h6 class="modal-title">حذف القسم</h6><button aria-label="Close" class="close" data-dismiss="modal"
                         type="button"><span aria-hidden="true">&times;</span></button>
                 </div>
-                <form action="{{ route('section.destroy',$section->id) }}" method="post">
+                <form action="{{ route('sections.destroy',$section->id) }}" method="POST">
                     @method('DELETE')
-                    @csrf --}}
-                    
+                    @csrf
+
                 {{-- <form action="sections/destroy" method="post"> --}}
                     {{-- {{ method_field('delete') }}
                     {{ csrf_field() }} --}}
 
-                    {{-- <div class="modal-body">
+                    <div class="modal-body">
                         <p>هل انت متاكد من عملية الحذف ؟</p><br>
-                        <input type="hidden" name="id" id="id" value="">
+                        <input type="hidden" name="id" id="id" value="{{ $section->id }}">
                         <input class="form-control" name="section_name" id="section_name" type="text" readonly>
                     </div>
                     <div class="modal-footer">
@@ -219,7 +232,7 @@
             </div>
             </form>
         </div>
-    </div> --}}
+    </div>
 @endsection
 
 @section('js')

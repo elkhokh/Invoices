@@ -82,16 +82,22 @@ class SectionsController extends Controller
      */
 public function update(Request $request, $id)
 {
-    $request->validate([
-        'section_name' => 'required|string|unique:sections,section_name,' . $id,
-        'description'  => 'required|string',
-    ], [
+    $section = sections::findOrFail($id);
+    $rules = [
+        'description' => 'required|string',
+    ];
+
+    if ($request->section_name == $section->section_name) {
+        $rules['section_name'] = 'required|string|unique:sections,section_name,' . $id;
+    } else {
+        $rules['section_name'] = 'required|string';
+    }
+
+    $request->validate($rules, [
         'section_name.required' => 'اسم القسم مطلوب',
         'section_name.unique'   => 'اسم القسم موجود بالفعل',
         'description.required'  => 'الوصف مطلوب',
     ]);
-
-    $section = sections::findOrFail($id);
 
     DB::beginTransaction();
 
@@ -99,14 +105,14 @@ public function update(Request $request, $id)
         $section->update([
             'section_name' => $request->section_name,
             'description' => $request->description,
-            // 'created_by' => Auth::user()->name,
         ]);
 
         DB::commit();
         session()->flash('Edit', 'تم تعديل القسم بنجاح');
-    } catch (\Exception $e) {
+    } catch (\Exception $th) {
         DB::rollBack();
-        session()->flash('error', 'حدث خطأ أثناء التعديل: ' . $e->getMessage());
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('error', 'حدث خطأ أثناء التعديل: ' . $th->getMessage());
     }
 
     return redirect()->back();
@@ -116,8 +122,27 @@ public function update(Request $request, $id)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(sections $sections)
+    public function destroy(Request $request)
     {
-
+        $id = $request->id;
+        sections::find($id)->delete();
+        session()->flash('Delete','تم حذف القسم بنجاح');
+        return redirect()->back();
     }
+
+    // public function destroy(sections $sections)
+    // {
+//  dd($sections); //Model Binding
+
+    // try {
+    //     $sections->delete();
+    //     session()->flash('Delete', 'تم حذف القسم بنجاح');
+    // } catch (\Throwable $th) {
+    //     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+    //     session()->flash('error', 'حدث خطأ أثناء الحذف');
+    // }
+    // return redirect()->back();
+
+
 }
+
