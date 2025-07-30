@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\sections;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 
@@ -12,6 +14,13 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+//BUG:  lllllllll
+//HACK: lllllllll
+//INFO: lllllllll
+//TODO: 111111111
+//IDEA: 111111111
+//FIXME:111111111
     public function index()
     {
         // return view('products.index');
@@ -22,8 +31,27 @@ class ProductController extends Controller
     // $sections = Product::with('sections')->paginate(7);
     return view('products.index', compact('sections','products'));
 
-
     }
+
+    //    public function index(Request $request)
+    // {
+    //         try {
+    //     $search = $request->input('search');
+    //     $query = sections::query()->with('section');
+
+    //     if ($search) {
+    //         $query->where('product_name', 'like', "%{$search}%");
+    //     }
+    //     $sections = $query->orderBy('id', 'asc')->paginate(7);
+    //     // $sections = sections::with('user')->orderBy('id', 'asc')->paginate(8);
+    //     // $sections = sections::where('user_id',auth()->id())->orderBy('id', 'desc')->paginate(10);
+    //     return view('sections.index', ['sections' => $sections,'search' => $search]);
+
+    // } catch (\Throwable $th) {
+    // Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+    //     return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل الأقسام');
+    // }
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -36,10 +64,29 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
-    {
-        //
+
+public function store(StoreProductRequest $request)
+{
+// dd($request->all());
+    try {
+        $data = $request->validated();
+
+        Product::create([
+            'Product_name' => $data['Product_name'],
+            'section_id' => $data['section_id'],
+            'description'  => $data['description'],
+            'created_by'   => Auth::user()->name,
+        ]);
+
+        session()->flash('Add', "تمت إضافة القسم بنجاح");
+        return redirect()->back();
+
+    } catch (\Exception $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        // return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل المنتج');
+        return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة المنتج')->withInput();
     }
+}
 
     /**
      * Display the specified resource.
@@ -62,7 +109,7 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+
     }
 
     /**
@@ -70,6 +117,15 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        dd($product);
+        //      Product::query()->findOrFail($request->id)->delete();
+        // return redirect()->back()->with('success' , 'the product deleted success');
     }
+    //     public function destroy(Request $request)
+    // {
+    //     $id = $request->id;
+    //     sections::find($id)->delete();
+    //     session()->flash('Delete','تم حذف القسم بنجاح');
+    //     return redirect()->back();
+    // }
 }

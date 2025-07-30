@@ -138,7 +138,6 @@ public function update(Request $request, $id)
     // public function destroy(sections $sections)
     // {
 //  dd($sections); //Model Binding
-
     // try {
     //     $sections->delete();
     //     session()->flash('Delete', 'تم حذف القسم بنجاح');

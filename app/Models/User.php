@@ -63,9 +63,13 @@ class User extends Authenticatable
     //     // return $this->hasOne(Profile::class ,'user_id','id');//or if name conventional is false
     //     return $this->hasOne(Profile::class );
     // }
-    // public function posts(){
-    //     //one to many relation
-    //     return $this->hasMany(Post::class);
+    public function sections(){
+        //many to many relation
+        return $this->hasMany(Sections::class);
+    }
+    // public function users(){
+    //     //many to many relation
+    //     return $this->hasMany(User::class);
     // }
 }
 

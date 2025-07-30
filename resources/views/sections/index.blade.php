@@ -94,7 +94,7 @@
     </td>
                                 <td>{{ $section->created_at->format('Y-m-d') }}</td>
                                 {{-- carbon format to edit days --}}
-                                <td>mustafa khalid</td>
+                        <td>{{ $section->created_by}}</td>
                                 {{-- <td>{{ $section?->user?->name}}</td> --}}
                                 <td>
                                             <a class="modal-effect btn btn-sm btn-warning" data-effect="effect-scale"
@@ -210,7 +210,7 @@
         </div>
     </div>
 
- <!-- delete -->
+<!-- delete -->
     <div class="modal" id="modaldemo9">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
@@ -257,6 +257,7 @@
 {{-- <script src="{{ URL::asset('assets/js/table-data.js') }}"></script> --}}
 {{-- show pagenation --}}
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
+
 <script>
     @if ($errors->any())
         $(document).ready(function () {
