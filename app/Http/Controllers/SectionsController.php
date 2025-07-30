@@ -13,19 +13,24 @@ class SectionsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $sections =sections::orderBy('id','asc')->paginate(7);
-        // return view('sections.index',['sections'=>$sections]);
             try {
-        $sections =sections::orderBy('id','asc')->paginate(7);
-        // $sections = sections::with('user')->orderBy('id', 'asc')->paginate(8);
-            // $sections = sections::where('user_id',auth()->id())->orderBy('id', 'desc')->paginate(10);
-            return view('sections.index',['sections'=>$sections]);
-        } catch (\Throwable $th) {
-        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        //    Log::error($th->getMessage() . $th->getFile() . $th->getLine());
+        $search = $request->input('search');
+        $query = sections::query();
+
+        if ($search) {
+            $query->where('section_name', 'like', "%{$search}%");
         }
+        $sections = $query->orderBy('id', 'asc')->paginate(7);
+        // $sections = sections::with('user')->orderBy('id', 'asc')->paginate(8);
+        // $sections = sections::where('user_id',auth()->id())->orderBy('id', 'desc')->paginate(10);
+        return view('sections.index', ['sections' => $sections,'search' => $search]);
+
+    } catch (\Throwable $th) {
+    Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل الأقسام');
+    }
     }
 
     /**

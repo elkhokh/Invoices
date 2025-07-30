@@ -54,14 +54,19 @@
 </div>
 
 
-    <div class="col-xl-12">
-        <div class="card mg-b-20">
-            <div class="card-header pb-0">
-                <div class="d-flex justify-content-between">
-                <div class="col-sm-6 col-md-4 col-xl-3">
-        <a class="modal-effect btn btn-outline-primary btn-block" data-effect="effect-scale" data-toggle="modal" href="#modaldemo8">إضافة قسم</a>
-    </div>
-                    <i class="mdi mdi-dots-horizontal text-gray"></i>
+<div class="col-xl-12">
+    <div class="card mg-b-20">
+        <div class="card-header pb-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+        <a class="modal-effect btn btn-outline-primary" style="min-width: 300px;" data-effect="effect-scale" data-toggle="modal" href="#modaldemo8">
+        إضافة قسم
+        </a>
+                </div>
+                <form action="{{ route('sections.index') }}" method="GET" class="d-flex" style="min-width: 300px;">
+                    <input type="text" name="search" class="form-control" placeholder="ابحث عن قسم..." value="{{ request('search') }}">
+                    <button class="btn btn-primary ml-2" type="submit">بحث</button>
+                </form>
                 </div>
             </div>
             <div class="card-body">
@@ -118,7 +123,8 @@
                             @endforeach
                         </tbody>
                     </table>
-                    {{ $sections->links() }}
+                    {{-- {{ $sections->links() }}--}}
+                    {{ $sections->appends(request()->query())->links() }}
                 </div>
             </div>
         </div>
@@ -233,6 +239,7 @@
             </form>
         </div>
     </div>
+
 @endsection
 
 @section('js')

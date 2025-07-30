@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
@@ -18,6 +19,7 @@ Route::get('/', function () {
 
 Route::resource('invoices',InvoicesController::class);
 Route::resource('sections',SectionsController::class);
+Route::resource('products',ProductController::class);
 
 Route::get('/{page}', [AdminController::class, 'index']);
 
