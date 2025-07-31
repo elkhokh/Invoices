@@ -19,17 +19,16 @@ class UpdateProductRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        return [
-            //
-        ];
-    }
+  public function rules()
+{
+    return [
 
-    public function messages(): array
-    {
-        return [
+    ];
+}
 
+public function messages()
+{
+    return [
     ];
     }
 }

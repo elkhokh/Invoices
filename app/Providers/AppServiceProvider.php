@@ -30,7 +30,15 @@ class AppServiceProvider extends ServiceProvider
 
     //     Paginator::useBootstrap();
     // }
-        Model::shouldBeStrict(!app()->isProduction()); // if you have eager loading it happend error in page
-        Paginator::useBootstrap();
+          // فعل strict mode فقط في بيئة التطوير
+    Model::shouldBeStrict(!app()->isProduction());
+
+    // امنع lazy loading لو حابب
+    Model::preventLazyLoading(!app()->isProduction());
+
+    // امنع mass assignment الخاطئ
+    Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
+
+    Paginator::useBootstrap();
     }
 }

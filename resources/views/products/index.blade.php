@@ -148,7 +148,6 @@
                 </div>
             </div>
 
-            <!-- مودال الحذف -->
             <div class="modal fade" id="deleteModal{{ $product->id }}" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form action="{{ route('products.destroy', $product->id) }}" method="POST">

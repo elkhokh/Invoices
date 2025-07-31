@@ -98,29 +98,48 @@ public function store(StoreProductRequest $request)
     /**
      * Update the specified resource in storage.
      */
-public function update(UpdateProductRequest $request, Product $product)
+public function update(Request $request, $id)
 {
-    dd($request);
+    $product = Product::findOrFail($id);
 
-    // DB::beginTransaction();
+    $rules = [
+        'description' => 'required|string',
+        'section_id' => 'required|exists:sections,id',
+    ];
 
-    // try {
-    //     $section->update([
-    //         'section_name' => $request->section_name,
-    //         'description'  => $request->description,
-    //     ]);
+    if ($request->Product_name !== $product->Product_name) {
+        $rules['Product_name'] = 'required|string|unique:products,Product_name';
+    } else {
+        $rules['Product_name'] = 'required|string';
+    }
 
-    //     DB::commit();
-    //     session()->flash('Edit', 'تم تعديل القسم بنجاح');
-    // } catch (\Exception $th) {
-    //     DB::rollBack();
-    //     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-    //     session()->flash('error', 'حدث خطأ أثناء التعديل: ' . $th->getMessage());
-    // }
+    $request->validate($rules, [
+        'Product_name.required' => 'اسم المنتج مطلوب',
+        'Product_name.unique' => 'اسم المنتج موجود بالفعل',
+        'section_id.required' => 'القسم مطلوب',
+        'section_id.exists' => 'القسم غير موجود',
+        'description.required' => 'الوصف مطلوب',
+    ]);
 
-    // return redirect()->back();
+    DB::beginTransaction();
+
+    try {
+        $product->update([
+            'Product_name' => $request->Product_name,
+            'section_id' => $request->section_id,
+            'description' => $request->description,
+        ]);
+
+        DB::commit();
+        session()->flash('Edit', 'تم تعديل المنتج بنجاح');
+    } catch (\Exception $th) {
+        DB::rollBack();
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('error', 'حدث خطأ أثناء التعديل: ' . $th->getMessage());
+    }
+
+    return redirect()->back();
 }
-
 
 
     /**
