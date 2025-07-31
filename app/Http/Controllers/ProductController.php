@@ -23,14 +23,17 @@ class ProductController extends Controller
 //FIXME:111111111
     public function index()
     {
-        // return view('products.index');
-       $sections = sections::all();
-        // $products = products::all();
-        // return view('products.products', compact('sections','products'));
-    $products = Product::with('section')->paginate(7);
-    // $sections = Product::with('sections')->paginate(7);
-    return view('products.index', compact('sections','products'));
 
+    try {
+            $sections = sections::all();
+            $products = Product::with('section')->orderBy('id', 'asc')->paginate(7);
+            // $products = Product::orderBy('id', 'asc')->paginate(7); // is eager loading problem without use with()
+            return view('products.index', compact('sections','products'));
+        } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        // return redirect()->back()->with('error', 'حدث خطأ أثناء  عرض المنتج');
+        return redirect()->back()->with('error', 'حدث خطأ أثناء عرض المنتج ')->withInput();
+    }
     }
 
     //    public function index(Request $request)
@@ -44,7 +47,7 @@ class ProductController extends Controller
     //     }
     //     $sections = $query->orderBy('id', 'asc')->paginate(7);
     //     // $sections = sections::with('user')->orderBy('id', 'asc')->paginate(8);
-    //     // $sections = sections::where('user_id',auth()->id())->orderBy('id', 'desc')->paginate(10);
+    //     // $sections = sections::where('user_id',auth()->id())->orderBy('id', 'desc')->paginate(7);
     //     return view('sections.index', ['sections' => $sections,'search' => $search]);
 
     // } catch (\Throwable $th) {

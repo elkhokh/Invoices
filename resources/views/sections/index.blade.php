@@ -51,7 +51,17 @@
             </button>
         </div>
     @endif
+
+@if(session()->has('not_found'))
+    <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+        <strong>{{ session('not_found') }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
 </div>
+
 
 
 <div class="col-xl-12">
@@ -64,7 +74,7 @@
         </a>
                 </div>
                 <form action="{{ route('sections.index') }}" method="GET" class="d-flex" style="min-width: 300px;">
-                    <input type="text" name="search" class="form-control" placeholder="ابحث عن قسم..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="ابحث عن قسم..." value="{{  $search  }}">
                     <button class="btn btn-primary ml-2" type="submit">بحث</button>
                 </form>
                 </div>
@@ -85,7 +95,6 @@
                         <tbody>
                             @php $i=1 @endphp
                             @foreach($sections as $section)
-
                             <tr>
                                 <td>{{ $i++ }}</td>
                                 <td>{{ $section->section_name }}</td>
@@ -96,149 +105,99 @@
                                 {{-- carbon format to edit days --}}
                         <td>{{ $section->created_by}}</td>
                                 {{-- <td>{{ $section?->user?->name}}</td> --}}
-                                <td>
-                                            <a class="modal-effect btn btn-sm btn-warning" data-effect="effect-scale"
-                                                data-id="{{ $section->id }}"
-                                                data-section_name="{{ $section->section_name }}"
-                                                data-description="{{ $section->description }}" data-toggle="modal"
-                                                href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
+    <td>
+        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editModal{{ $section->id }}">تعديل</button>
+        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $section->id }}">حذف</button>
+    </td>
+            </tr>
 
-
-                                            <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                                data-id="{{ $section->id }}" data-section_name="{{ $section->section_name }}"
-                                                data-toggle="modal" href="#modaldemo9" title="حذف"><i
-                                                    class="las la-trash"></i></a>
-                                </td>
-            {{-- <td><div class="d-flex align-items-center gap-1"><a href="{{ route('sections.update',$section->id) }}" class="btn btn-warning btn-sm">تعديل</a>
-            <a href="{{ route('delete',$form->id) }}" class="btn btn-danger btn-sm">Delete</a>
-            <form action="{{ route('sections.destroy',$section->id) }}" method="POST"
-                    onsubmit="return confirm('Are you sure?')">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-sm">حذف</button>
-        </form>
-                </div>
-</td> --}}
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    {{-- {{ $sections->links() }}--}}
-                    {{ $sections->appends(request()->query())->links() }}
+            <!-- edit -->
+            <div class="modal fade" id="editModal{{ $section->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form action="{{ route('sections.update', $section->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">تعديل القسم</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" name="section_name" class="form-control" value="{{ $section->section_name }}">
+                                <textarea name="description" class="form-control mt-2">{{ $section->description }}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">حفظ</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
 
-<!-- Basic modal -->
-<div class="modal" id="modaldemo8">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content modal-content-demo">
-            <form action="{{ route('sections.store') }}" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <h6 class="modal-title">إضافة قسم جديد</h6>
-                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                        <span aria-hidden="true">×</span>
-                    </button>
+            <!-- delete -->
+            <div class="modal fade" id="deleteModal{{ $section->id }}" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form action="{{ route('sections.destroy', $section->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">حذف القسم</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>هل أنت متأكد من حذف القسم: <strong>{{ $section->section_name }}</strong>؟</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">حذف</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+            </div>
+        @endforeach
 
+
+    </tbody>
+</table>
+                    {{ $sections->links() }}
+                    {{-- {{ $sections->appends(request()->query())->links() }} --}}
+<!-- add-->
+<div class="modal fade" id="modaldemo8" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form action="{{ route('sections.store') }}" method="POST">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة قسم جديد</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
                 <div class="modal-body">
-                    <h6>تفاصيل القسم</h6>
-                    <p>أدخل اسم القسم والوصف.</p>
-
                     <div class="form-group">
                         <label>اسم القسم</label>
-                        <input type="text" name="section_name" class="form-control @error('section_name') is-invalid @enderror" placeholder="أدخل الاسم" value="{{ old('section_name') }}">
+                        <input type="text" name="section_name" class="form-control" required>
                         @error('section_name')
                             <div class="text-danger mt-1">{{ $message }}</div>
                         @enderror
                     </div>
-
                     <div class="form-group">
                         <label>الوصف</label>
-                        <textarea name="description" class="form-control @error('description') is-invalid @enderror" placeholder="أدخل الوصف">{{ old('description') }}</textarea>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
                         @error('description')
                             <div class="text-danger mt-1">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
-
                 <div class="modal-footer">
-                    <button class="btn ripple btn-success" type="submit">حفظ</button>
-                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">إغلاق</button>
+                    <button type="submit" class="btn btn-success">إضافة</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
-<!-- End Basic modal -->
-</div>
-    <!-- edit -->
-    <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">تعديل القسم</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <form action="{{ route('sections.update',$section->id) }}" method="POST" autocomplete="off">
-                    {{-- <form action="sections/update" method="POST" autocomplete="off"> --}}
-                    @method('PUT')
-                    @csrf
-                        <div class="form-group">
-                            <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label">اسم القسم:</label>
-                            <input class="form-control" name="section_name" id="section_name" type="text" value="{{ old('section_name') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">ملاحظات:</label>
-                            <textarea class="form-control" id="description" name="description" value="{{ old('description') }}"></textarea>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">تاكيد</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-<!-- delete -->
-    <div class="modal" id="modaldemo9">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content modal-content-demo">
-                <div class="modal-header">
-                    <h6 class="modal-title">حذف القسم</h6><button aria-label="Close" class="close" data-dismiss="modal"
-                        type="button"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <form action="{{ route('sections.destroy',$section->id) }}" method="POST">
-                    @method('DELETE')
-                    @csrf
-
-                {{-- <form action="sections/destroy" method="post"> --}}
-                    {{-- {{ method_field('delete') }}
-                    {{ csrf_field() }} --}}
-
-                    <div class="modal-body">
-                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
-                        <input type="hidden" name="id" id="id" value="{{ $section->id }}">
-                        <input class="form-control" name="section_name" id="section_name" type="text" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                        <button type="submit" class="btn btn-danger">تاكيد</button>
-                    </div>
-            </div>
-            </form>
-        </div>
-    </div>
 
 @endsection
 
@@ -265,7 +224,7 @@
         });
     @endif
 </script>
-<script>
+{{-- <script>
     $('#exampleModal2').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         var id = button.data('id')
@@ -289,5 +248,5 @@
         modal.find('.modal-body #section_name').val(section_name);
     })
 
-</script>
+</script> --}}
 @endsection

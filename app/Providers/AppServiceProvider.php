@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
     //     Paginator::useBootstrap();
     // }
-        Model::shouldBeStrict(!app()->isProduction());
+        Model::shouldBeStrict(!app()->isProduction()); // if you have eager loading it happend error in page
         Paginator::useBootstrap();
     }
 }

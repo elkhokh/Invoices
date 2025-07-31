@@ -23,12 +23,14 @@ class SectionsController extends Controller
             $query->where('section_name', 'like', "%{$search}%");
         }
         $sections = $query->orderBy('id', 'asc')->paginate(7);
-        // $sections = sections::with('user')->orderBy('id', 'asc')->paginate(8);
-        // $sections = sections::where('user_id',auth()->id())->orderBy('id', 'desc')->paginate(10);
+                if ($search && $sections->isEmpty()) {
+            session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
+            $search ='';
+        }
         return view('sections.index', ['sections' => $sections,'search' => $search]);
-
     } catch (\Throwable $th) {
     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+
         return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل الأقسام');
     }
     }
@@ -127,26 +129,27 @@ public function update(Request $request, $id)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
-    {
-        $id = $request->id;
-        sections::find($id)->delete();
-        session()->flash('Delete','تم حذف القسم بنجاح');
-        return redirect()->back();
+    // public function destroy(Request $request)
+    // {
+    //     $id = $request->id;
+    //     sections::findOrFail($id)->delete();
+    //     session()->flash('Delete','تم حذف القسم بنجاح');
+    //     return redirect()->back();
+    // }
+
+public function destroy($id)
+{
+    try {
+        $section = sections::findOrFail($id);
+        $section->delete();
+        session()->flash('Delete', 'تم حذف القسم بنجاح');
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('error', 'حدث خطأ أثناء الحذف');
     }
 
-    // public function destroy(sections $sections)
-    // {
-//  dd($sections); //Model Binding
-    // try {
-    //     $sections->delete();
-    //     session()->flash('Delete', 'تم حذف القسم بنجاح');
-    // } catch (\Throwable $th) {
-    //     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-    //     session()->flash('error', 'حدث خطأ أثناء الحذف');
-    // }
-    // return redirect()->back();
-
+    return redirect()->back();
+}
 
 }
 

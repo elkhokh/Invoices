@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //php artisan migrate add_is_user_id_to_invoices_table --table=invoices
         Schema::table('invoices', function (Blueprint $table) {
             $table->foreignId('user_id')->after('id')->constrained();
         });
@@ -21,6 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        //php atiran migrate:rollback
         Schema::table('invoices', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropColumn('user_id');

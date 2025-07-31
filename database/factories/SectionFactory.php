@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +20,9 @@ class SectionFactory extends Factory
     return [
     // 'section_name' => $this->faker->unique()->words(2, true),
     // 'description'   => $this->faker->sentence(10),
-    // 'created_by'    => $this->faker->name(),
+    // // 'created_by'    => $this->faker->name(),
+    // 'created_by'    => Auth::user()->name,
+    // 'created_at'  =>$this->faker->dateTimeBetween,
 ];
     }
 }

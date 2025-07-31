@@ -97,6 +97,7 @@
                         </thead>
                         <tbody>
                             @php $i = 1; @endphp
+                            {{-- @forelse($products as $product) --}}
                             @foreach($products as $product)
                                 <tr>
                                     <td>{{ $i++ }}</td>
@@ -123,6 +124,7 @@
                                         </a>
                                     </td>
                                 </tr>
+                            {{-- @endforelse --}}
                             @endforeach
                         </tbody>
                     </table>
@@ -229,6 +231,33 @@
         </div>
     </div>
 
+            <!-- delete -->
+        <div class="modal fade" id="modaldemo9" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">حذف المنتج</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <form action="{{ route('products.destroy',$product->id) }}" method="POST">
+                    @method('DELETE')
+                    @csrf
+                        <div class="modal-body">
+                            <p>هل انت متاكد من عملية الحذف ؟</p><br>
+                            <input type="hidden" name="pro_id" id="pro_id" value="">
+                            <input class="form-control" name="Product_name" id="product_name" type="text" readonly>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                            <button type="submit" class="btn btn-danger">تاكيد</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 @endsection
 
 @section('js')
@@ -283,32 +312,15 @@
         })
 
 
-    //     $('#modaldemo9').on('show.bs.modal', function(event) {
-    //         var button = $(event.relatedTarget)
-    //         var pro_id = button.data('id')
-    //         var product_name = button.data('Product_name')
-    //         var modal = $(this)
-    //         modal.find('.modal-body #pro_id').val(id);
-    //         modal.find('.modal-body #product_name').val(product_name);
-    //     })
+        $('#modaldemo9').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget)
+            var pro_id = button.data('pro_id')
+            var product_name = button.data('product_name')
+            var modal = $(this)
 
-    </script>
-
-    <script>
-    $('#exampleModal2').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var product_name = button.data('product_name')
-        var created_by = button.data('created_by')
-        var section_id = button.data('section_id')
-        var description = button.data('description')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #product_name').val(product_name);
-        modal.find('.modal-body #description').val(description);
-        modal.find('.modal-body #section_id').val(section_id);
-        modal.find('.modal-body #created_by').val(created_by);
-    })
+            modal.find('.modal-body #pro_id').val(pro_id);
+            modal.find('.modal-body #product_name').val(product_name);
+        })
 
 </script>
 
