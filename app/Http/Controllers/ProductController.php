@@ -1,5 +1,10 @@
 <?php
-
+//BUG:  lllllllll
+//HACK: lllllllll
+//INFO: lllllllll
+//TODO: 111111111
+//IDEA: 111111111
+//FIXME:111111111
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -14,13 +19,6 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-
-//BUG:  lllllllll
-//HACK: lllllllll
-//INFO: lllllllll
-//TODO: 111111111
-//IDEA: 111111111
-//FIXME:111111111
     public function index()
     {
 

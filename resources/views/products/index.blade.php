@@ -59,6 +59,15 @@
             </button>
         </div>
     @endif
+
+    @if(session()->has('not_found'))
+    <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+        <strong>{{ session('not_found') }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
 </div>
 
 <div class="col-xl-12">
@@ -97,8 +106,8 @@
                         </thead>
                         <tbody>
                             @php $i = 1; @endphp
-                            {{-- @forelse($products as $product) --}}
-                            @foreach($products as $product)
+                            @forelse($products as $product)
+                            {{-- @foreach($products as $product) --}}
                                 <tr>
                                     <td>{{ $i++ }}</td>
                                     <td>{{ $product->Product_name }}</td>
@@ -107,25 +116,78 @@
                                     <td>{{ $product->created_at->format('Y-m-d') }}</td>
                                     <td>{{ $product->created_by}}</td>
                                     <td>
-                                        <a class="modal-effect btn btn-sm btn-warning" data-effect="effect-scale"
-                                            data-id="{{ $product->id }}"
-                                            data-product_name="{{ $product->Product_name }}"
-                                            data-description="{{ $product->description }}"
-                                            data-section_id="{{ $product->section_id }}"
-                                            data-toggle="modal" href="#editModal" title="تعديل">
-                                            <i class="las la-pen"></i>
-                                        </a>
+        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editModal{{ $product->id }}">تعديل</button>
+        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $product->id }}">حذف</button>
+    </td>
+            </tr>
 
-                                        <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                            data-id="{{ $product->id }}"
-                                            data-product_name="{{ $product->Product_name }}"
-                                            data-toggle="modal" href="#deleteModal" title="حذف">
-                                            <i class="las la-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {{-- @endforelse --}}
-                            @endforeach
+            <div class="modal fade" id="editModal{{ $product->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form action="{{ route('products.update', $product->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">تعديل المنتج</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" name="Product_name" class="form-control" value="{{ $product->Product_name }}">
+                                <select name="section_id" class="form-control mt-2">
+                                    @foreach ($sections as $section)
+                                <option value="{{ $section->id }}" {{ $product->section_id == $section->id ? 'selected' : '' }}>
+                                            {{ $section->section_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <textarea name="description" class="form-control mt-2">{{ $product->description }}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">حفظ </button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- مودال الحذف -->
+            <div class="modal fade" id="deleteModal{{ $product->id }}" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form action="{{ route('products.destroy', $product->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">حذف المنتج</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>هل أنت متأكد من حذف المنتج: <strong>{{ $product->Product_name }}</strong>؟</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">حذف</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        @empty
+            @if(request()->has('search'))
+                <tr>
+                    <td colspan="5">
+                        <div class="alert alert-warning text-center">
+                            لا يوجد نتائج مطابقة لكلمة البحث "<strong>{{ request('search') }}</strong>"
+                        </div>
+                    </td>
+                </tr>
+            @endif
+        @endforelse
+    </tbody>
+</table>
+        {{-- @endforeach --}}
                         </tbody>
                     </table>
                     {{ $products->links() }}
@@ -202,62 +264,7 @@
         </div>
 <!-- row closed -->
 <!-- delete -->
-    <div class="modal" id="modaldemo9">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content modal-content-demo">
-                <div class="modal-header">
-                    <h6 class="modal-title">حذف المنتج</h6><button aria-label="Close" class="close" data-dismiss="modal"
-                        type="button"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <form action="{{ route('products.destroy',$product->id) }}" method="POST">
-                    @method('DELETE')
-                    @csrf
 
-                {{-- <form action="sections/destroy" method="post"> --}}
-                    {{-- {{ method_field('delete') }}
-                    {{ csrf_field() }} --}}
-
-                    <div class="modal-body">
-                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
-                        <input type="hidden" name="id" id="id" value="{{ $product->id }}">
-                        <input class="form-control" name="product_name" id="product_name" type="text" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                        <button type="submit" class="btn btn-danger">تاكيد</button>
-                    </div>
-            </div>
-            </form>
-        </div>
-    </div>
-
-            <!-- delete -->
-        <div class="modal fade" id="modaldemo9" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">حذف المنتج</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                <form action="{{ route('products.destroy',$product->id) }}" method="POST">
-                    @method('DELETE')
-                    @csrf
-                        <div class="modal-body">
-                            <p>هل انت متاكد من عملية الحذف ؟</p><br>
-                            <input type="hidden" name="pro_id" id="pro_id" value="">
-                            <input class="form-control" name="Product_name" id="product_name" type="text" readonly>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                            <button type="submit" class="btn btn-danger">تاكيد</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 @endsection
 
 @section('js')
@@ -297,31 +304,5 @@
     @endif
 </script>
 
-    <script>
-        $('#edit_Product').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget)
-            var Product_name = button.data('name')
-            var section_name = button.data('section_name')
-            var pro_id = button.data('pro_id')
-            var description = button.data('description')
-            var modal = $(this)
-            modal.find('.modal-body #Product_name').val(Product_name);
-            modal.find('.modal-body #section_name').val(section_name);
-            modal.find('.modal-body #description').val(description);
-            modal.find('.modal-body #pro_id').val(pro_id);
-        })
-
-
-        $('#modaldemo9').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget)
-            var pro_id = button.data('pro_id')
-            var product_name = button.data('product_name')
-            var modal = $(this)
-
-            modal.find('.modal-body #pro_id').val(pro_id);
-            modal.find('.modal-body #product_name').val(product_name);
-        })
-
-</script>
 
 @endsection

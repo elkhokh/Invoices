@@ -224,29 +224,5 @@
         });
     @endif
 </script>
-{{-- <script>
-    $('#exampleModal2').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var section_name = button.data('section_name')
-        var description = button.data('description')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #section_name').val(section_name);
-        modal.find('.modal-body #description').val(description);
-    })
 
-</script>
-
-<script>
-    $('#modaldemo9').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var section_name = button.data('section_name')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #section_name').val(section_name);
-    })
-
-</script> --}}
 @endsection
