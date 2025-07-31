@@ -140,8 +140,7 @@ public function update(Request $request, $id)
 public function destroy($id)
 {
     try {
-        $section = sections::findOrFail($id);
-        $section->delete();
+        sections::findOrFail($id)->delete();
         session()->flash('Delete', 'تم حذف القسم بنجاح');
     } catch (\Throwable $th) {
         Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());

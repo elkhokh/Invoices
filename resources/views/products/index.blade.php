@@ -82,14 +82,11 @@
                 </div>
 
                 <form action="{{ route('products.index') }}" method="GET" class="d-flex" style="min-width: 300px;">
-                    <input type="text" name="search" class="form-control" placeholder="ابحث عن قسم..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="ابحث عن منتج..." value="{{ $search}}">
                     <button class="btn btn-primary ml-2" type="submit">بحث</button>
                 </form>
-
                 </div>
             </div>
-
-
                 <div class="card-body">
                     <div class="table-responsive">
                         <table id="example1" class="table key-buttons text-md-nowrap" data-page-length='50'>
@@ -106,8 +103,8 @@
                         </thead>
                         <tbody>
                             @php $i = 1; @endphp
-                            @forelse($products as $product)
-                            {{-- @foreach($products as $product) --}}
+                            {{-- @forelse($products as $product) --}}
+                            @foreach($products as $product)
                                 <tr>
                                     <td>{{ $i++ }}</td>
                                     <td>{{ $product->Product_name }}</td>
@@ -173,21 +170,8 @@
                     </form>
                 </div>
             </div>
-
-        @empty
-            @if(request()->has('search'))
-                <tr>
-                    <td colspan="5">
-                        <div class="alert alert-warning text-center">
-                            لا يوجد نتائج مطابقة لكلمة البحث "<strong>{{ request('search') }}</strong>"
-                        </div>
-                    </td>
-                </tr>
-            @endif
-        @endforelse
-    </tbody>
-</table>
-        {{-- @endforeach --}}
+        {{-- @endforelse --}}
+        @endforeach
                         </tbody>
                     </table>
                     {{ $products->links() }}
