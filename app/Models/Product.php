@@ -10,7 +10,7 @@ class Product extends Model
     /** @use HasFactory<\Database\Factories\ProductFactory> */
     use HasFactory;
     protected $fillable = [
-        'Product_name' ,'section_id', 'description','created_by', 'created_at','updated_at'
+        'Product_name' ,'section_id', 'description','created_by', 'created_at','updated_at',
     ];
 
     protected $casts = [

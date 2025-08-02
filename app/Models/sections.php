@@ -28,4 +28,8 @@ class sections extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function invoices(){
+        return $this->hasmany(invoices::class);
+    }
 }

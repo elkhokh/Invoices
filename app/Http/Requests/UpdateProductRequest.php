@@ -19,16 +19,22 @@ class UpdateProductRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-  public function rules()
-{
-    return [
+    public function rules(): array
+    {
+        return [
+            'Product_name' => 'required|string',
+            'description'  => 'required|string',
+            'section_id'   => 'required|exists:sections,id',
+        ];
+    }
 
-    ];
-}
-
-public function messages()
-{
-    return [
-    ];
+    public function messages(): array
+    {
+        return [
+            'Product_name.required' => 'اسم المنتج مطلوب',
+            'description.required'  => 'الوصف مطلوب',
+            'section_id.required'   => 'القسم مطلوب',
+            // 'section_id.exists'     => 'القسم غير موجود',
+        ];
     }
 }

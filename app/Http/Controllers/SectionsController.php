@@ -20,7 +20,7 @@ class SectionsController extends Controller
         $query = sections::query();
 
         if ($search) {
-            $query->where('section_name', 'like', "%{$search}%");
+            $query->where('section_name', 'like', "%{$search}%") ;// ->first(); ->limit(3);
         }
         $sections = $query->orderBy('id', 'asc')->paginate(7);
                 if ($search && $sections->isEmpty()) {

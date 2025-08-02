@@ -12,31 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('invoices', function (Blueprint $table) {
-
         $table->id();
-
+        $table->foreignId('section_id')->after('id')->constrained('sections')->cascadeOnDelete();
         $table->string('invoice_number');
         $table->date('invoice_date');
         $table->date('due_date');
-
         $table->string('product');
-        $table->string('section');
-
+        $table->decimal('amount_collection',8,2)->nullable();;
+        $table->decimal('amount_commission',8,2)->nullable();
         $table->decimal('discount', 8, 2);
         $table->decimal('rate_vat', 5, 2);
         $table->decimal('value_vat', 8, 2);
         $table->decimal('total', 10, 2);
-
         $table->string('status', 50);
         $table->unsignedTinyInteger('value_status');
-
         $table->text('note')->nullable();
-        $table->string('user');
-
+        $table->date('payment_date')->nullable();
         $table->softDeletes();
         $table->timestamps();
-
-        // $table->enum("status",['active','notactive'])->default('notactive');
+        // $table->enum("status",['مدفوعة','غير مدفوعة','مدفوعة جزئيا'])->after('total')->default('غير مدفوعة');
+        // $table->enum("value_status",[1,2,3])->after('status')->default(2);
         });
     }
 

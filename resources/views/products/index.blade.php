@@ -68,6 +68,14 @@
         </button>
     </div>
 @endif
+    @if(session()->has('error'))
+        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Add') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endif
 </div>
 
 <div class="col-xl-12">
@@ -106,9 +114,12 @@
                             {{-- @forelse($products as $product) --}}
                             @foreach($products as $product)
                                 <tr>
-                                    <td>{{ $i++ }}</td>
-                                    <td>{{ $product->Product_name }}</td>
-                                    <td>{{ $product->description }}</td>
+                            <td>{{ $i++ }}</td>
+                            <td>{{ $product->Product_name }}</td>
+                            {{-- <td>{{ $product->description }}</td>--}}
+                            <td title="{{ $product->description }}">
+        {{ \Illuminate\Support\Str::limit($product->description, 20, '...') }}
+    </td>
                                     <td>{{ $product->section->section_name ?? 'غير معروف' }}</td>
                                     <td>{{ $product->created_at->format('Y-m-d') }}</td>
                                     <td>{{ $product->created_by}}</td>
@@ -286,6 +297,5 @@
         });
     @endif
 </script>
-
 
 @endsection

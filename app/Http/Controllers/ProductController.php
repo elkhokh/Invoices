@@ -98,47 +98,29 @@ public function store(StoreProductRequest $request)
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, $id)
+
+
+public function update(UpdateProductRequest $request, Product $product)
 {
-    $product = Product::findOrFail($id);
-
-    $rules = [
-        'description' => 'required|string',
-        'section_id' => 'required|exists:sections,id',
-    ];
-
-    if ($request->Product_name !== $product->Product_name) {
-        $rules['Product_name'] = 'required|string|unique:products,Product_name';
-    } else {
-        $rules['Product_name'] = 'required|string';
-    }
-
-    $request->validate($rules, [
-        'Product_name.required' => 'اسم المنتج مطلوب',
-        'Product_name.unique' => 'اسم المنتج موجود بالفعل',
-        'section_id.required' => 'القسم مطلوب',
-        'section_id.exists' => 'القسم غير موجود',
-        'description.required' => 'الوصف مطلوب',
-    ]);
-
+    // start trans - using try and catch   - check validation from form request - save all result or rollback
     DB::beginTransaction();
 
     try {
-        $product->update([
-            'Product_name' => $request->Product_name,
-            'section_id' => $request->section_id,
-            'description' => $request->description,
-        ]);
+        $product->update($request->validated());
 
         DB::commit();
-        session()->flash('Edit', 'تم تعديل المنتج بنجاح');
-    } catch (\Exception $th) {
+        return back()->with('Edit', 'تم تعديل المنتج بنجاح');
+    } catch (\Throwable $th) {
         DB::rollBack();
-        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        session()->flash('error', 'حدث خطأ أثناء التعديل: ' . $th->getMessage());
-    }
 
-    return redirect()->back();
+        Log::channel('invoice')->error("Product Update Failed", [
+            'message' => $th->getMessage(),
+            'file'    => $th->getFile(),
+            'line'    => $th->getLine(),
+        ]);
+
+        return back()->with('error', 'حدث خطأ أثناء التعديل');
+    }
 }
 
 
