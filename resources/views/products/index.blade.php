@@ -68,14 +68,7 @@
         </button>
     </div>
 @endif
-    @if(session()->has('error'))
-        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Add') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    @endif
+
 </div>
 
 <div class="col-xl-12">
@@ -204,7 +197,6 @@
                     </button>
                 </div>
                     <form action="{{ route('products.store') }}" method="POST">
-                        {{-- {{ csrf_field() }} --}}
                         @csrf
                         <div class="modal-body">
                 <div class="form-group">

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\InvoiceDetail;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreInvoiceDetailRequest;
 use App\Http\Requests\UpdateInvoiceDetailRequest;
+use App\Models\InvoiceAttachment;
+use GuzzleHttp\Psr7\Request;
 
 class InvoiceDetailController extends Controller
 {
@@ -59,8 +62,25 @@ class InvoiceDetailController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(InvoiceDetail $invoiceDetail)
-    {
-        //
+
+    public function destroy(Request $request){
+        return $request ;
     }
+    // public function destroy($id)
+    // {
+    //     //      $invoices = invoice_attachments::findOrFail($request->id_file);
+    //     // $invoices->delete();
+    //     // Storage::disk('public_uploads')->delete($request->invoice_number.'/'.$request->file_name);
+    //     // session()->flash('delete', 'تم حذف المرفق بنجاح');
+    //     // return back();
+    //        try {
+    //     InvoiceAttachment::findOrFail($id)->delete();
+    //     session()->flash('Delete', 'تم حذف القسم بنجاح');
+    // } catch (\Throwable $th) {
+    //     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+    //     session()->flash('error', 'حدث خطأ أثناء الحذف');
+    // }
+
+    // return redirect()->back();
+    // }
 }

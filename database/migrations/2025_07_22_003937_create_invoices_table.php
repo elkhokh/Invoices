@@ -28,8 +28,8 @@ return new class extends Migration
         $table->unsignedTinyInteger('value_status');
         $table->text('note')->nullable();
         $table->date('payment_date')->nullable();
-        $table->softDeletes();
-        $table->timestamps();
+        $table->softDeletes(); //created_at  updated_at
+        $table->timestamps(); //deleted_at
         // $table->enum("status",['مدفوعة','غير مدفوعة','مدفوعة جزئيا'])->after('total')->default('غير مدفوعة');
         // $table->enum("value_status",[1,2,3])->after('status')->default(2);
         });

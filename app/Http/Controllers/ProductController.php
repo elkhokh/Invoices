@@ -29,7 +29,7 @@ public function index(Request $request)
         $sections = sections::all();
         $query = Product::with('section');
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
+            $query->where('product_name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
         }
         $products = $query->orderBy('id', 'asc')->paginate(7);
 
@@ -98,7 +98,6 @@ public function store(StoreProductRequest $request)
     /**
      * Update the specified resource in storage.
      */
-
 
 public function update(UpdateProductRequest $request, Product $product)
 {

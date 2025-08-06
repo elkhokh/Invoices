@@ -1,11 +1,14 @@
 <?php
 
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
+use App\Models\InvoiceAttachment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\InvoiceAttachmentController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\SectionsController;
+use App\Http\Controllers\InvoiceDetailController;
 
 // Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth');
 Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
@@ -18,7 +21,9 @@ Route::get('/', function () {
 });
 
 Route::resource('invoices',InvoicesController::class);
+Route::resource('attachment',InvoiceAttachmentController::class);
 Route::get('/sections/{id}',[InvoicesController::class,'getProductsForSection']);
+Route::resource('detail',InvoiceDetailController::class);
 Route::resource('sections',SectionsController::class);
 Route::resource('products',ProductController::class);
 

@@ -66,8 +66,52 @@
 
 
     <!-- row -->
-    <div class="row">
-        <!--div-->
+<div class="row">
+<div class="container mt-3">
+    @if(session()->has('Add'))
+        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Add') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endif
+
+    @if(session()->has('Edit'))
+        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Edit') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if(session()->has('Delete'))
+        <div class="alert alert-danger alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Delete') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if(session()->has('not_found'))
+    <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+        <strong>{{ session('not_found') }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
+    @if(session()->has('error'))
+        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+            <strong>{{ session('Add') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endif
+</div>
         <div class="col-xl-12">
             <div class="card mg-b-20">
         <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap">
@@ -87,8 +131,8 @@
 
     {{-- Search Form --}}
     <form method="GET" action="{{ route('invoices.index') }}" class="d-flex" style="gap: 10px; max-width: 400px;">
-        <input type="text" name="search" class="form-control" placeholder="ابحث برقم الفاتورة أو القسم أو الحالة"
-            value="{{ request('search') }}">
+        <input type="text" name="search" class="form-control" placeholder="ابحث برقم الفاتورة    "
+            value="{{ $search}}">
         <button class="btn btn-primary" type="submit">
             <i class="fas fa-search"></i>
         </button>
@@ -152,46 +196,68 @@
         <div class="dropdown-menu tx-13">
 
             {{-- تعديل الفاتورة --}}
-            <a class="dropdown-item" href="{{ route('invoices.edit', $invoice->id) }}">
-                <i class="fas fa-edit text-primary"></i> تعديل الفاتورة
-            </a>
+            <form action="{{ route('invoices.edit', $invoice->id) }}" method="GET">
+                @csrf
+                <button type="submit" class="dropdown-item">
+                    <i class="fas fa-edit text-primary"></i> تعديل الفاتورة
+                </button>
+            </form>
 
             {{-- حذف الفاتورة --}}
-            <a class="dropdown-item" href="#" data-invoice_id="{{ $invoice->id }}"
-                data-toggle="modal" data-target="#delete_invoice">
-                <i class="text-danger fas fa-trash-alt"></i> حذف الفاتورة
-            </a>
+            <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST"
+                onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="dropdown-item text-danger">
+                    <i class="fas fa-trash-alt"></i> حذف الفاتورة
+                </button>
+            </form>
 
             {{-- تغيير حالة الدفع --}}
-            <a class="dropdown-item" href="{{ route('invoices.show', $invoice->id) }}">
-                <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
-            </a>
+            <form action="{{ route('invoices.show', $invoice->id) }}" method="GET">
+                @csrf
+                <button type="submit" class="dropdown-item">
+                    <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
+                </button>
+            </form>
 
-            {{-- نقل إلى الأرشيف --}}
-            <a class="dropdown-item" href="#" data-invoice_id="{{ $invoice->id }}"
-                data-toggle="modal" data-target="#Transfer_invoice">
-                <i class="text-warning fas fa-exchange-alt"></i> نقل إلى الأرشيف
-            </a>
+            {{-- نقل إلى الأرشيف (يفترض أنك عندك route اسمه archive أو مشابه) --}}
+            <form action="{{ route('invoices.show', $invoice->id) }}" method="POST"
+                onsubmit="return confirm('هل تريد نقل الفاتورة إلى الأرشيف؟');">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="dropdown-item text-warning">
+                    <i class="fas fa-exchange-alt"></i> نقل إلى الأرشيف
+                </button>
+            </form>
 
             {{-- رؤية تفاصيل الفاتورة --}}
-            <a class="dropdown-item" href="{{ route('invoices.show', $invoice->id) }}">
-                <i class="fas fa-eye text-info"></i> رؤية تفاصيل الفاتورة
-            </a>
+            <form action="{{ route('invoices.show', $invoice->id) }}" method="GET">
+                @csrf
+                <button type="submit" class="dropdown-item">
+                    <i class="fas fa-eye text-info"></i> رؤية تفاصيل الفاتورة
+                </button>
+            </form>
 
             {{-- طباعة الفاتورة --}}
-            <a class="dropdown-item" href="{{ url('Print_invoice', $invoice->id) }}">
-                <i class="text-success fas fa-print"></i> طباعة الفاتورة
-            </a>
+            <form action="{{ url('Print_invoice', $invoice->id) }}" method="GET" target="_blank">
+                @csrf
+                <button type="submit" class="dropdown-item">
+                    <i class="text-success fas fa-print"></i> طباعة الفاتورة
+                </button>
+            </form>
 
         </div>
     </div>
 </td>
-
-                                    </tr>
+                        </tr>
                                 @endforeach
 
                             </tbody>
                         </table>
+                    {{ $invoices->links() }}
+                    {{-- {{ $invoices->appends(request()->query())->links() }} --}}
+
                     </div>
                 </div>
             </div>
@@ -200,35 +266,34 @@
     </div>
 
     <!-- حذف الفاتورة -->
-    <div class="modal fade" id="delete_invoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
+{{-- <div class="modal fade" id="delete_invoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">حذف الفاتورة</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <form action="{{ route('invoices.destroy', 'test') }}" method="post">
-                        {{-- {{ method_field('delete') }}
-                        {{ csrf_field() }} --}}
+                    <h5 class="modal-title">حذف الفاتورة</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    هل انت متاكد من عملية الحذف ؟
-                    <input type="hidden" name="invoice_id" id="invoice_id" value="">
+                    هل أنت متأكد من عملية الحذف؟
+                    <input type="hidden" name="invoice_id" id="invoice_id">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                    <button type="submit" class="btn btn-danger">تاكيد</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-danger">تأكيد</button>
                 </div>
-                </form>
             </div>
-        </div>
+        </form>
     </div>
+</div> --}}
+
 
 
     <!-- ارشيف الفاتورة -->
-    <div class="modal fade" id="Transfer_invoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    {{-- <div class="modal fade" id="Transfer_invoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -237,9 +302,9 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <form action="{{ route('invoices.destroy', 'test') }}" method="post">
-                        {{ method_field('delete') }}
-                        {{ csrf_field() }}
+                    <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
                 </div>
                 <div class="modal-body">
                     هل انت متاكد من عملية الارشفة ؟
@@ -254,7 +319,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     </div>
     <!-- row closed -->
@@ -309,5 +374,17 @@
 
     </script>
 
+{{-- <script>
+    $('#delete_invoice').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+
+        var modal = $(this);
+        modal.find('#invoice_id').val(id);
+
+        // غير URL الفورم
+        modal.find('#deleteForm').attr('action', '/invoices/' + id);
+    });
+</script> --}}
 
 @endsection

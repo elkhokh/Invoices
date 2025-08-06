@@ -8,12 +8,13 @@ use App\Models\sections;
 use Illuminate\Http\Request;
 use App\Models\InvoiceDetail;
 // use PhpParser\Node\Stmt\Catch_;
+use Illuminate\Validation\Rule;
+use App\Models\InvoiceAttachment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreInvoiceRequest;
-use App\Models\InvoiceAttachment;
 
 // use Symfony\Component\Translation\CatalogueMetadataAwareInterface;
 
@@ -24,27 +25,26 @@ class InvoicesController extends Controller
      */
     public function index(Request $request)
     {
+        // $invoices = invoices::with('section')->orderBy('id','asc')->paginate(7);
+        // return view('invoices.index', compact('invoices'));
+            try {
+        $search = $request->input('search');
+        $secttion = sections::all();
+        $query = invoices::with('section');
+        if ($search) {
+            $query->where('invoice_number', 'like', "%{$search}%");
+        }
+        $invoices = $query->orderBy('id', 'asc')->paginate(7);
 
-        $invoices = invoices::with('section')->orderBy('id','asc')->paginate(7);
-        return view('invoices.index', compact('invoices'));
-    //         try {
-    //     $search = $request->input('search');
-    //     $invoices = invoices::all();
-    //     $query = Product::with('section');
-    //     if ($search) {
-    //         $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
-    //     }
-    //     $invoices_se = $query->orderBy('id', 'asc')->paginate(7);
-
-    //     if ($search && $invoices_se->isEmpty()) {
-    //         session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
-    //         $search = '';
-    //     }
-    //     return view('invoices.index', compact('invoices', 'invoices_se', 'search'));
-    // } catch (\Throwable $th) {
-    //     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-    //     return redirect()->back()->with('error', 'حدث خطأ أثناء عرض المنتجات');
-    // }
+        if ($search && $invoices->isEmpty()) {
+            session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
+            $search = '';
+        }
+        return view('invoices.index', compact('secttion', 'invoices', 'search'));
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        return redirect()->back()->with('error', 'حدث خطأ أثناء عرض المنتجات');
+    }
 
     }
 
@@ -85,7 +85,8 @@ public function create()
     /**
      * Store a newly created resource in storage.
      */
-
+// ->first() to get first row without make foreach
+// ->get()   to get all data and make foreach
     public function store(StoreInvoiceRequest $request)
     {
         try{
@@ -124,17 +125,17 @@ InvoiceDetail::create([
         if ($request->hasFile('file_name')) {
             $file = $request->file('file_name');
             // file_name - upload file in storage - save to var
-            $fileName = time() . "_" . $file->getClientOriginalName();
+            // $fileName = time() . "_" . $file->getClientOriginalName();
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
             $url = Storage::disk("public")->putFileAs("invoices_file", $file, $fileName);
-            $data['file_name'] = $url;
-        }
+            $data['fileName'] = $url;
                 $invoice->invoiceAttachment()->create([
                 'file_name' => $fileName,
                 'invoice_number' => $invoice->invoice_number,
                 'invoice_id' => $invoice->id,
                 'created_by' => Auth::user()->name,
             ]);
-
+            }
         session()->flash('Add', "تمت إضافة الفاتورة بنجاح");
         return redirect()->back();
         // return view('invoices.index');
@@ -199,33 +200,127 @@ InvoiceDetail::create([
     /**
      * Display the specified resource.
      */
-    public function show(invoices $invoices)
+    public function show( $id)
     {
-        //
+        $invoices = invoices::where('id',$id)->first();
+        $details  = InvoiceDetail::where('invoice_id',$id)->get();
+        $attachments  = invoiceAttachment::where('invoice_id',$id)->get();
+        return view('invoices.show',compact('invoices','details','attachments'));
+
+    // $invoices = invoices::with(['section','invoiceDetail', 'invoiceAttachment'])->where('id', $id)->firstOrFail();
+    // // return $invoices;
+    //     return view('invoices.show',['invoices'=> $invoices]);
+        // abort(500);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(invoices $invoices)
-    {
-        //
+    // public function edit(invoices $invoices)
+    // {
+
+    // }
+    public function edit($id)
+{
+    // get invoices - section - invoicesDetail - invoiceAttachment
+        try{
+    $invoices = invoices::with(['section', 'invoiceDetail', 'invoiceAttachment'])->findOrFail($id);
+    $sections = sections::all();
+    return view('invoices.update', compact('invoices', 'sections'));
+    // $invoice = invoices::findOrFail($id);
+    // // $invoices = invoices::where('id', $id)->first();
+    // $sections = sections::all();
+    // return view('invoices.update', compact('sections', 'invoices'));
+
+        } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        return redirect()->back()->with('Error', 'حدث خطأ أثناء  تحميل الفاتورة لتعديل ');
     }
+}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, invoices $invoices)
+    public function update(Request $request, $id)
     {
-        //
+        $invoices = invoices::findOrFail($id);
+        $rules = [
+            // 'invoice_number' => 'required|string|unique:invoices',
+            'invoice_number' => ['required', 'string', Rule::unique('invoices', 'invoice_number')->ignore($invoices->id)],
+            'invoice_date' => 'required|date',
+            'due_date' => 'required|date|after_or_equal:invoice_date',//check due date
+            'section_id' => 'required|exists:sections,id',
+            'product' => 'required|string',
+            'amount_collection' => 'required|numeric',
+            'amount_commission' => 'required|numeric',
+            'discount' => 'nullable|numeric|lte:amount_commission',
+            'rate_vat' => 'required|numeric|in:5,10,15',
+            'value_vat' => 'required|numeric',
+            'total' => 'required|numeric', // is not required
+            'note' => 'nullable|string', // is not required
+    ];
+    //    if ($request->invoice_number == $invoices->invoice_number) {
+    //     $rules['invoice_number'] = 'required|unique:invoices,invoice_number,' . $id;
+    // } else {
+    //     $rules['invoice_number'] = 'required';
+    // }
+    $request->validate($rules, [
+            'invoice_number.required'   => 'رقم الفاتورة مطلوب',
+            'invoice_number.unique'   => 'رقم الفاتورة موجود بالفعل',
+            'invoice_date.required' => 'تاريخ الفاتورة مطلوب',
+            'due_date.required'        => 'تاريخ الاستحقاق مطلوب',
+            'due_date.after_or_equal'     => 'تاريخ الاستحقاق يجب أن يكون بعد أو يساوي تاريخ الفاتورة',
+            'section_id.required'      => 'القسم مطلوب',
+            'section_id.exists'         => 'القسم غير موجود',
+            'product.required'         => 'اسم المنتج مطلوب',
+            'amount_collection.required'  => 'مبلغ التحصيل مطلوب',
+            'amount_collection.numeric'   => 'مبلغ التحصيل يجب أن يكون رقمًا',
+            'amount_commission.required'   => 'مبلغ العمولة مطلوب',
+            // 'amount_commission.lte'        => 'العمولة يجب أن تكون أقل من أو تساوي مبلغ التحصيل',
+            'discount.numeric'      => 'الخصم يجب أن يكون رقمًا',
+            'discount.lte' => 'الخصم لا يمكن أن يتجاوز مبلغ العمولة',
+            'rate_vat.required'         => 'نسبة الضريبة مطلوبة',
+            'rate_vat.in'             => 'نسبة الضريبة يجب أن تكون 5% أو 10% أو 15%',
+            'value_vat.required'      => 'قيمة الضريبة مطلوبة',
+            'total.required'        => 'الإجمالي مطلوب',
+            'note.string'        => 'الملاحظات تكون كلام ',
+    ]);
+    DB::beginTransaction();
+        try {
+        $invoices->update([
+            'invoice_number' => $request->invoice_number,
+            'invoice_date' => $request->invoice_date,
+            'due_date' => $request->due_date,
+            'product' => $request->product,
+            'section_id' => $request->section_id,
+            'amount_collection' => $request->amount_collection,
+            'amount_commission' => $request->amount_commission,
+            'discount' => $request->discount,
+            'value_vat' => $request->value_vat,
+            'rate_vat' => $request->rate_vat,
+            'total' => $request->total,
+            'note' => $request->note,
+        ]);
+        DB::commit();
+        session()->flash('Edit', 'تم تعديل الفاتورة بنجاح');
+    } catch (\Exception $th) {
+        DB::rollBack();
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('Error', 'حدث خطأ أثناء التعديل: ' . $th->getMessage());
+    }
+    return redirect()->back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(invoices $invoices)
+    public function destroy( $id)
     {
-        //
+        //       if ($post->image && Storage::exists($post->image)) {
+        //     Storage::disk('public')->delete($post->image);
+        // }
+        // $post->delete();
+        // return to_route("posts.index")->with("success", "Post Deleted Successfully!");
     }
 }
         // invoices::create([
@@ -257,3 +352,53 @@ InvoiceDetail::create([
         //     'note'             =>$data['note'],
         //     'user'             => Auth::user()->name,
         // ]);
+
+    //    public function delete($id){
+    //     // return $id ;
+    //     DB::table('forms')->where('id',$id)->delete();
+    //     return redirect()->route('form');
+    // }
+
+    // public function deleteAll(){
+    //    DB::table('forms')->delete();//delete() is delete all posts but the id is increment from last id if id =30 and delete all the new post will be 31 to solve that use truncate
+    //    return redirect()->route('form');
+    // }
+
+    // public function truncateAll(){
+    //     DB::table('forms')->truncate();
+    //     return redirect()->route('form');
+    // }
+
+//     public function destroy(Product $product )
+//     {
+
+//         // Product::destroy($id);
+//         $product->delete();
+//     return redirect()->route('product.create');
+//     }
+
+//     public function trashed()
+// {
+//      $product =Product::product()->first();
+//         return $product;
+//     // $products = Product::onlyTrashed()->get();
+//     // return view('product.trashed', ['products' => $products]);
+// }
+//     public function restore($id){
+//         // return $id ;
+//         Product::withTrashed()->where('id',$id)->restore();
+//         return redirect()->back();
+//     }
+
+//     public function forceDelete($id){
+//             Product::withTrashed()->where('id',$id)->forceDelete();
+//         return redirect()->back();
+//     }
+// }
+// $invoice = Invoice::find(1);
+// $invoice->delete(); // Soft Delete
+
+// $deleted = Invoice::onlyTrashed()->first(); // Get soft-deleted
+// $deleted->restore(); // Undo delete
+
+// $deleted->forceDelete(); // Permanently remove

@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class invoices extends Model
 {
-    use HasFactory;
+    use HasFactory , SoftDeletes ;
         protected $fillable = [
             'invoice_number',
             'invoice_date',
@@ -24,6 +25,7 @@ class invoices extends Model
             'status',
             'value_status',
             'user_id',
+            'payment_date',
     ];
     // protected $guarded =[] ;
     protected $casts = [
@@ -35,9 +37,9 @@ class invoices extends Model
     }
 
     public function invoiceAttachment(){
-        return $this->hasOne(InvoiceAttachment::class,'invoice_id');
+        return $this->hasMany(InvoiceAttachment::class,'invoice_id');
     }
     public function invoiceDetail(){
-        return $this->hasOne(InvoiceDetail::class,'invoice_id');
+        return $this->hasMany(InvoiceDetail::class,'invoice_id');
     }
 }

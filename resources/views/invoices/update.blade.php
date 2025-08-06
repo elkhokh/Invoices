@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'اضافة فاتورة')
+@section('title', 'تعديل فاتورة')
 @section('css')
     <!--- Internal Select2 css-->
     <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
@@ -18,7 +18,7 @@
         <div class="my-auto">
             <div class="d-flex">
                 <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/
-                    اضافة فاتورة</span>
+                    تعديل فاتورة</span>
             </div>
         </div>
     </div>
@@ -27,56 +27,57 @@
 @section('content')
   <div class="row">
     <div class="container mt-3">
-    @if(session()->has('Add'))
+        @if(session()->has('Error'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Add') }}</strong>
+            <strong>{{ session('Error') }}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
+                <span aria-hidden="true">&times;</span>
             </button>
         </div>
     @endif
-    @if(session()->has('Error'))
+        @if(session()->has('Edit'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Add') }}</strong>
+            <strong>{{ session('Edit') }}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
+                <span aria-hidden="true">&times;</span>
             </button>
         </div>
     @endif
+
   </div>
-    <!-- row -->
 
         <div class="col-lg-12 col-md-12">
             <div class="card">
                 <div class="card-body">
-            <form action="{{ route('invoices.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
+            <form action="{{ route('invoices.update',$invoices->id) }}" method="POST" enctype="multipart/form-data" autocomplete="off">
                         @csrf
-
+                        @method('PUT')
                         {{-- 1 --}}
                         <div class="row">
                             <div class="col">
                                 <label for="inputName" class="control-label">رقم الفاتورة</label>
                                 <input type="text" class="form-control" id="inputName" name="invoice_number"
-                                    title="يرجي ادخال رقم الفاتورة" value="{{ old('invoice_number') }}">
-                                        @error('section_id')
+                                    title="يرجي ادخال رقم الفاتورة" value="{{ $invoices->invoice_number }}">
+                                        @error('invoice_number')
         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
                             </div>
                             <div class="col">
                                 <label>تاريخ الفاتورة</label>
                                 <input class="form-control fc-datepicker" name="invoice_date" placeholder="YYYY-MM-DD"
-                                    type="text" value="{{ date('Y-m-d') }}" >
+                                    type="text" value="{{ $invoices->invoice_date }}" >
+                                    {{-- type="text" value="{{ date('Y-m-d') }}" > --}}
                         @error('invoice_date')
         <div class="text-danger mt-1">{{ $message }}</div>
-    @enderror
+                        @enderror
                             </div>
                             <div class="col">
                                 <label>تاريخ الاستحقاق</label>
                                 <input class="form-control fc-datepicker" name="due_date" placeholder="YYYY-MM-DD"
-                                    type="text" >
-                                                                        @error('due_date')
+                                    type="text" value="{{ $invoices->due_date }}" >
+                                    @error('due_date')
         <div class="text-danger mt-1">{{ $message }}</div>
-    @enderror
+                                @enderror
                             </div>
                         </div>
                         {{-- 2 --}}
@@ -87,33 +88,35 @@
                                 <select name="section_id" class="form-control SlectBox" onclick="console.log($(this).val())"
                                     onchange="console.log('change is firing')">
                                     <!--placeholder-->
-                                    <option value="" selected disabled>حدد القسم</option>
-                                    @foreach ($sections as $section)
-                                    {{-- var SectionId take the id  from value option  >>>> --}}
-                                        <option value="{{ $section->id }}"> {{ $section->section_name }}</option>
-                                    @endforeach
+                        {{-- <option value="value="{{ $invoices->section->section_id }}"" selected disabled>حدد القسم</option> --}}
+                        <option value="value="{{ $invoices->section->id }}"" selected > {{ $invoices->section->section_name }}</option>
+                            @foreach ($sections as $section)
+                        <option value="{{ $section->id }}">{{ $section->section_name }}</option>
+                            @endforeach
+
                                 </select>
                                     @error('section_id')
         <div class="text-danger mt-1">{{ $message }}</div>
-    @enderror
+                                    @enderror
                             </div>
 
-                            <div class="col">
+                                <div class="col">
                                 <label for="inputName" class="control-label">المنتج</label>
-                                <select id="product" name="product" class="form-control">
+                            <select name="product" class="form-control">
+                                <option value="{{ $invoices->product }}"> {{ $invoices->product }}</option>
                                 </select>
                                     @error('product')
-        <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
                             </div>
 
                             <div class="col">
                                 <label for="inputName" class="control-label">مبلغ التحصيل</label>
-                                <input type="number" class="form-control" id="inputName" name="amount_collection" value="{{ old('amount_collection')}}"
+                                <input type="number" class="form-control" id="inputName" name="amount_collection" value="{{$invoices->amount_collection}}"
                                     oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                         @error('amount_collection')
             <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
+                                        @enderror
                             </div>
                         </div>
                         {{-- 3 --}}
@@ -121,7 +124,7 @@
                             <div class="col">
                                 <label for="inputName" class="control-label">مبلغ العمولة</label>
                                 <input type="number" class="form-control form-control-lg" id="amount_commission"
-                                    name="amount_commission" title="يرجي ادخال مبلغ العمولة " value="{{ old('amount_commission')}}"
+                                    name="amount_commission" title="يرجي ادخال مبلغ العمولة " value="{{ $invoices->amount_commission}}"
                                     oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 @error('amount_commission')
         <div class="text-danger mt-1">{{ $message }}</div>
@@ -131,7 +134,7 @@
                             <div class="col">
                                 <label for="inputName" class="control-label">الخصم</label>
                                 <input type="number" class="form-control form-control-lg" id="Discount" name="discount"
-                                    title="يرجي ادخال مبلغ الخصم " value="{{ old('invoice_number')}}"
+                                    title="يرجي ادخال مبلغ الخصم " value="{{ $invoices->discount }}"
                                     oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
                                     value=0 >
                     @error('discount')
@@ -143,7 +146,8 @@
                                 <label for="inputName" class="control-label">نسبة ضريبة القيمة المضافة</label>
                                 <select name="rate_vat" id="Rate_VAT" class="form-control" onchange="myFunction()">
                                     <!--placeholder-->
-                                    <option value="" selected disabled>حدد نسبة الضريبة</option>
+                                    <option value="{{ $invoices->rate_vat }}"  selected disabled>{{ $invoices->rate_vat }}</option>
+
                                     <option value="5">5%</option>
                                     <option value="10">10%</option>
                                     <option value="15">15%</option>
@@ -157,7 +161,7 @@
                         <div class="row">
                             <div class="col">
                                 <label for="inputName" class="control-label">قيمة ضريبة القيمة المضافة</label>
-                                <input type="number" class="form-control" id="Value_VAT" name="value_vat" readonly>
+                                <input type="number" class="form-control" id="Value_VAT" name="value_vat" value="{{ $invoices->value_vat }}" readonly>
                 @error('value_vat')
         <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror
@@ -165,7 +169,7 @@
 
                             <div class="col">
                                 <label for="inputName" class="control-label">الاجمالي شامل الضريبة</label>
-                                <input type="number" class="form-control" id="Total" name="total" readonly>
+                                <input type="number" class="form-control" id="Total" name="total" readonly value="{{ $invoices->total }}">
                     @error('total')
         <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
@@ -175,15 +179,15 @@
                         {{-- 5 --}}
                         <div class="row">
                             <div class="col">
-                                <label for="exampleTextarea">ملاحظات</label>
-                                <textarea class="form-control" id="exampleTextarea" name="note" rows="3"></textarea>
+                            <label for="exampleTextarea">ملاحظات</label>
+    <textarea class="form-control" id="exampleTextarea" name="note" rows="3" >{{ $invoices->note }}</textarea>
                     @error('note')
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                             </div>
                         </div><br>
 
-                        <p class="text-danger">* صيغة المرفق  jpeg ,.jpg , png </p>
+                        {{-- <p class="text-danger">* صيغة المرفق  jpeg ,.jpg , png </p>
                         <h5 class="card-title">المرفقات</h5>
 
                         <div class="col-sm-12 col-md-12">
@@ -192,7 +196,7 @@
                                 @error('file_name')
                         <div class="text-danger mt-1">{{ $message }}</div>
                                 @enderror
-                        </div><br>
+                        </div><br> --}}
 
                         <div class="d-flex justify-content-center">
                             <button type="submit" class="btn btn-primary">حفظ البيانات</button>
@@ -290,10 +294,12 @@
             } else {
                 var intResults = Amount_Commission2 * Rate_VAT / 100;
                 var intResults2 = parseFloat(intResults + Amount_Commission2);
+                var Value_VAT = parseFloat(document.getElementById("Value_VAT").value);
                 sumq = parseFloat(intResults).toFixed(2);
                 sumt = parseFloat(intResults2).toFixed(2);
                 document.getElementById("Value_VAT").value = sumq;
                 document.getElementById("Total").value = sumt;
+
             }
         }
     </script>

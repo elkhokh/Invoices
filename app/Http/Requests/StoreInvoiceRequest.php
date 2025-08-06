@@ -34,7 +34,7 @@ class StoreInvoiceRequest extends FormRequest
             'value_vat' => 'required|numeric',
             'total' => 'required|numeric', // is not required
             'note' => 'nullable|string', // is not required
-            'file_name'         => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'file_name'         => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
 
         ];
     }
