@@ -66,21 +66,4 @@ class InvoiceDetailController extends Controller
     public function destroy(Request $request){
         return $request ;
     }
-    // public function destroy($id)
-    // {
-    //     //      $invoices = invoice_attachments::findOrFail($request->id_file);
-    //     // $invoices->delete();
-    //     // Storage::disk('public_uploads')->delete($request->invoice_number.'/'.$request->file_name);
-    //     // session()->flash('delete', 'تم حذف المرفق بنجاح');
-    //     // return back();
-    //        try {
-    //     InvoiceAttachment::findOrFail($id)->delete();
-    //     session()->flash('Delete', 'تم حذف القسم بنجاح');
-    // } catch (\Throwable $th) {
-    //     Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-    //     session()->flash('error', 'حدث خطأ أثناء الحذف');
-    // }
-
-    // return redirect()->back();
-    // }
 }

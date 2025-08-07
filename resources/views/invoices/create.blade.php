@@ -187,7 +187,7 @@
                         <h5 class="card-title">المرفقات</h5>
 
                         <div class="col-sm-12 col-md-12">
-                            <input type="file" name="file_name" class="dropify" accept=".pdf,.jpg, .png, image/jpeg, image/png"
+                            <input type="file" name="file_name" class="dropify" accept=".jpg, .png, image/jpeg, image/png"
                                 data-height="70" />
                                 @error('file_name')
                         <div class="text-danger mt-1">{{ $message }}</div>

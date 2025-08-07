@@ -173,6 +173,7 @@
                     </form>
                 </div>
             </div>
+
         {{-- @endforelse --}}
         @endforeach
                         </tbody>

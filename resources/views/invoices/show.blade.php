@@ -1,4 +1,5 @@
 @extends('layouts.master')
+@section("title", "تفاصيل فاتورة")
 @section('css')
     <!---Internal  Prism css-->
     <link href="{{ URL::asset('assets/plugins/prism/prism.css') }}" rel="stylesheet">
@@ -7,9 +8,7 @@
     <!--- Custom-scroll -->
     <link href="{{ URL::asset('assets/plugins/custom-scroll/jquery.mCustomScrollbar.css') }}" rel="stylesheet">
 @endsection
-@section('title')
-    تفاصيل فاتورة
-@stop
+
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
@@ -24,18 +23,15 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
-
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+@if ($errors->any())
+    <div class="alert alert-danger w-100">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
-
 
     @if(session()->has('Add'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
@@ -54,9 +50,6 @@
             </button>
         </div>
     @endif
-
-
-
     <!-- row opened -->
     <div class="row row-sm">
 
@@ -204,13 +197,17 @@
                                                         <p class="text-danger">* صيغة المرفق  jpeg ,.jpg , png </p>
                                                         <h5 class="card-title">اضافة مرفقات</h5>
                     <form method="POST" action="{{ route('attachment.store') }}" enctype="multipart/form-data">
-                                            @csrf
-                                                            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" name="file_name" required>
+                        @csrf
+                    <div class="custom-file">
+                {{-- <input type="file" class="custom-file-input" id="customFile" name="file_name" required> --}}
+                <input type="file" name="file_name" class="custom-file-input" id="customFile" >
                 <input type="hidden" id="customFile" name="invoice_number" value="{{ $invoices->invoice_number }}">
                 <input type="hidden" id="invoice_id" name="invoice_id" value="{{ $invoices->id }}">
                 <label class="custom-file-label" for="customFile">حدد المرفق</label>
-                                                            </div><br><br>
+                                @error('file_name')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div><br><br>
                 <button type="submit" class="btn btn-primary btn-sm " name="uploadedFile">تاكيد</button>
                                                         </form>
                                                     </div>
@@ -254,20 +251,30 @@
             role="button">
                     <i class="fas fa-download"></i>&nbsp; تحميل
                         </a>
-
-
                                 {{-- @can('حذف المرفق') --}}
-                                    {{-- <button class="btn btn-outline-danger btn-sm"
-                                        data-toggle="modal"
-                                        data-file_name="{{ $attachment->file_name }}"
-                                        data-invoice_number="{{ $attachment->invoice_number }}"
-                                        data-id_file="{{ $attachment->id }}"
-                                        data-target="#detail">حذف</button> --}}
         <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $attachment->id }}">حذف</button>
                                 {{-- @endcan --}}
 
                             </td>
                         </tr>
+                            <div class="modal fade" id="deleteModal{{ $attachment->id }}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form action="{{ route('attachment.destroy', $attachment->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">حذف المرفق</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>هل أنت متأكد من حذف المرفق: <strong>{{ $attachment->file_name }}</strong>؟</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">حذف</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                    </div>
+                </div>
                     @endforeach
                 </tbody>
                 </tbody>
@@ -292,7 +299,7 @@
 
     <!-- delete -->
 
-            <div class="modal fade" id="deleteModal{{ $attachment->id }}" tabindex="-1" role="dialog">
+            {{-- <div class="modal fade" id="deleteModal{{ $attachment->id }}" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form action="{{ route('attachment.destroy', $attachment->id) }}" method="POST">
                         @csrf
@@ -312,7 +319,9 @@
                         </div>
                     </form>
                 </div>
-            </div>
+            </div> --}}
+
+
             {{-- @endforeach --}}
     {{-- <div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -393,5 +402,12 @@
         });
 
     </script>
+{{-- <script>
+    @if ($errors->any())
+        $(document).ready(function () {
+            $('#exampleModal').modal('show');
+        });
+    @endif
+</script> --}}
 
 @endsection

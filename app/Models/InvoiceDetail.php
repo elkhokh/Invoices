@@ -12,6 +12,7 @@ class InvoiceDetail extends Model
 
     // protected $guarded ;
     protected $fillable = [
+    // 'id',
     'invoice_id' ,
     'invoice_number' ,
     'product'        ,
@@ -19,8 +20,8 @@ class InvoiceDetail extends Model
     'status'         ,
     'value_status'  ,
     'note'          ,
+    'payment_date',
     'user'       ,
-
     ];
 
     public function invoice(){

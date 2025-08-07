@@ -33,7 +33,7 @@ class InvoiceAttachmentController extends Controller
      */
     public function store(Request $request)
     {
-         try {
+        try {
             $invoice = invoices::query()->findOrFail($request['invoice_id']);
 
             $request->validate([
@@ -42,7 +42,9 @@ class InvoiceAttachmentController extends Controller
                 'file_name.required'=>'المرفق مطلووووووب',
                 'file_name.mimes' =>'ركز وشوف امتداد الصور'
             ]);
+
             $file = $request->file('file_name');
+            
             // file_name - upload file in storage - save to var
             // $fileName = time() . "_" . $file->getClientOriginalName();
             $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());

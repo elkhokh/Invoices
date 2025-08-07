@@ -33,12 +33,11 @@ class StoreInvoiceRequest extends FormRequest
             'rate_vat' => 'required|numeric|in:5,10,15',
             'value_vat' => 'required|numeric',
             'total' => 'required|numeric', // is not required
-            'note' => 'nullable|string', // is not required
-            'file_name'         => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'note'       =>   'nullable|string', // is not required
+            'file_name'  => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
 
         ];
     }
-
     public function messages()
     {
         return [

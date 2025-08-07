@@ -26,75 +26,53 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
-
-    @if (session()->has('delete_invoice'))
+    @if (session()->has('Delete'))
         <script>
             window.onload = function() {
                 notif({
                     msg: "تم حذف الفاتورة بنجاح",
                     type: "success"
-                })
-            }
-
+                })}
         </script>
     @endif
-
-
-    @if (session()->has('Status_Update'))
+    @if (session()->has('updateStates'))
         <script>
             window.onload = function() {
                 notif({
                     msg: "تم تحديث حالة الدفع بنجاح",
                     type: "success"
-                })
-            }
-
+                }) }
         </script>
     @endif
-
     @if (session()->has('restore_invoice'))
         <script>
             window.onload = function() {
                 notif({
                     msg: "تم استعادة الفاتورة بنجاح",
                     type: "success"
-                })
-            }
-
+                })}
         </script>
     @endif
-
-
+    @if (session()->has('Error'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم استعادة الفاتورة بنجاح",
+                    type: "success"
+                })}
+        </script>
+    @endif
     <!-- row -->
 <div class="row">
 <div class="container mt-3">
-    @if(session()->has('Add'))
+    {{-- @if(session()->has('Add'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
             <strong>{{ session('Add') }}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
         </div>
-    @endif
-
-    @if(session()->has('Edit'))
-        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Edit') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    @if(session()->has('Delete'))
-        <div class="alert alert-danger alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Delete') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
+    @endif --}}
     @if(session()->has('not_found'))
     <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
         <strong>{{ session('not_found') }}</strong>
@@ -103,14 +81,14 @@
         </button>
     </div>
 @endif
-    @if(session()->has('error'))
-        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Add') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    @endif
+    @if(session()->has('Error'))
+    <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+        <strong>{{ session('Error') }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
 </div>
         <div class="col-xl-12">
             <div class="card mg-b-20">
@@ -214,12 +192,18 @@
             </form>
 
             {{-- تغيير حالة الدفع --}}
-            <form action="{{ route('invoices.show', $invoice->id) }}" method="GET">
+            {{-- <form action="{{ route('invoices.getFileStatus', $invoice->id) }}" method="POST">
                 @csrf
                 <button type="submit" class="dropdown-item">
                     <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
                 </button>
-            </form>
+            </form> --}}
+            <form action="{{ route('invoices.getFileStatus', $invoice->id) }}" method="GET">
+    <button type="submit" class="dropdown-item">
+        <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
+    </button>
+                    </form>
+
 
             {{-- نقل إلى الأرشيف (يفترض أنك عندك route اسمه archive أو مشابه) --}}
             <form action="{{ route('invoices.show', $invoice->id) }}" method="POST"

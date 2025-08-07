@@ -316,42 +316,131 @@ InvoiceDetail::create([
      */
     public function destroy( $id)
     {
-        //       if ($post->image && Storage::exists($post->image)) {
-        //     Storage::disk('public')->delete($post->image);
-        // }
-        // $post->delete();
-        // return to_route("posts.index")->with("success", "Post Deleted Successfully!");
+        // invoices::findOrFail($id)->forceDelete(); //force delete
+        // invoices::findOrFail($id)->delete();// soft delete
+            try {
+        $invoice = invoices::with('invoiceAttachment')->findOrFail($id);
+        foreach ($invoice->invoiceAttachment as $attachment) {
+            $filePath = 'invoices_file/' . $attachment->file_name;
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+            $attachment->delete();
+        }
+        $invoice->forceDelete();// forece delete
+        // $invoice->delete();// soft delete
+        session()->flash('Delete');
+        // session()->flash('Delete', 'تم حذف القسم بنجاح');
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('Error', 'حدث خطأ أثناء الحذف');
+    }
+
+    return redirect()->back();
+}
+
+public function getFileStatus($id)
+{
+  try{
+    // $invoices = invoices::where('id',$id)->first();
+    $invoices = invoices::findOrFail($id);
+    return view('invoices.status', compact('invoices'));
+  } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('Error', 'حدث خطأ أثناء الحذف');
+        return redirect()->back();
     }
 }
-        // invoices::create([
-        //     'invoice_number'   =>$data['invoice_number'],
-        //     'invoice_date'     =>$data['invoice_date'],
-        //     'due_date'         =>$data['due_date'],
-        //     'section_id'       =>$data['section_id'],
-        //     'product'          =>$data['product'],
-        //     'amount_collection'=>$data['amount_collection'],
-        //     'amount_commission'=>$data['amount_commission'],
-        //     'discount'         =>$data['discount'],
-        //     'rate_vat'         =>$data['rate_vat'],
-        //     'value_vat'        =>$data['value_vat'],
-        //     'total'            =>$data['total'],
-        //     'note'             =>$data['note']??null,
-        //     'status'           =>"غير مدفوعة",
-        //     'value_status'     =>2,
-        //     'user_id'          => Auth::id(),
-        // ]);
 
-        // $invoice_id = invoices::latest()->first()->id; // to get the last id store in invoices
-        // InvoiceDetail::create([
-        //     'invoice_id'       => $invoice_id,
-        //     'invoice_number'   =>$data['invoice_number'],
-        //     'product'          =>$data['product'],
-        //     'section'          =>$data['section_id'],
-        //     'status'           => 'غير مدفوعة',
-        //     'value_status'     => 2,
-        //     'note'             =>$data['note'],
-        //     'user'             => Auth::user()->name,
-        // ]);
+public function updateStatus($id, Request $request)
+{
+    $rules = [
+        'status'        => 'required|in:مدفوعة,مدفوعة جزئيا',
+        'payment_date'  => 'required|date',
+        'invoice_number'=> 'required|string',
+        'product'       => 'required|string',
+        'section'       => 'required|exists:sections,id',
+        'note'          => 'nullable|string',
+    ];
+    $messages = [
+        'status.required'       => 'حالة الفاتورة مطلوبة',
+        'status.in'             => 'الحالة يجب أن تكون مدفوعة أو مدفوعة جزئيا',
+        'payment_date.required' => 'تاريخ الدفع مطلوب',
+        'payment_date.date'     => 'تاريخ الدفع غير صالح',
+        'invoice_number.required' => 'رقم الفاتورة مطلوب',
+        'product.required'      => 'اسم المنتج مطلوب',
+        'section.required'      => 'القسم مطلوب',
+        'section.exists'        => 'القسم غير موجود',
+        'note.string'           => 'الملاحظات يجب أن تكون نص',
+    ];
+    $request->validate($rules, $messages);
+    try {
+        $invoice = invoices::findOrFail($id);
+
+        $isPaid = $request->status === 'مدفوعة';
+        $statusValue = $isPaid ? 1 : 3;
+
+        $invoice->update([
+            'value_status'  => $statusValue,
+            'status'        => $request->status,
+            'payment_date'  => $request->payment_date,
+        ]);
+
+        invoiceDetail::create([
+            'invoice_id'     => $invoice->id,
+            'invoice_number' => $request->invoice_number,
+            'product'        => $request->product,
+            'section'        => $request->section,
+            'status'         => $request->status,
+            'value_status'   => $statusValue,
+            'note'           => $request->note,
+            'payment_date'   => $request->payment_date,
+            'user'           => Auth::user()->name,
+        ]);
+        session()->flash('updateStates');
+        // session()->flash('updateStates', 'تم تحديث حالة الفاتورة بنجاح');
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . ' in ' . $th->getFile() . ' on line ' . $th->getLine());
+        session()->flash('Error');
+        // session()->flash('Error', 'حدث خطأ أثناء تحديث حالة الفاتورة');
+    }
+    return redirect()->route('invoices.index');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
 
     //    public function delete($id){
     //     // return $id ;

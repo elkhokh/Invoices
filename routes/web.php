@@ -26,7 +26,9 @@ Route::get('/sections/{id}',[InvoicesController::class,'getProductsForSection'])
 Route::resource('detail',InvoiceDetailController::class);
 Route::resource('sections',SectionsController::class);
 Route::resource('products',ProductController::class);
-
+Route::get('invoices/status/{id}', [InvoicesController::class, 'getFileStatus'])->name('invoices.getFileStatus');
+Route::patch('invoices/status/{id}', [InvoicesController::class, 'updateStatus'])->name('invoices.updateStatus');
+// Route::put('invoices/status/{id}', [InvoicesController::class, 'updateStatus'])->name('invoices.updateStatus');
 Route::get('/{page}', [AdminController::class, 'index']);
 
 Route::get('/dashboard', function () {
