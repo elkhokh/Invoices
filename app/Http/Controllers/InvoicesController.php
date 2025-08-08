@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Product;
 use App\Models\invoices;
 use App\Models\sections;
 use Illuminate\Http\Request;
-use App\Models\InvoiceDetail;
 // use PhpParser\Node\Stmt\Catch_;
+use App\Models\InvoiceDetail;
 use Illuminate\Validation\Rule;
 use App\Models\InvoiceAttachment;
+use App\Notifications\AddInvoices;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreInvoiceRequest;
+use App\Mail\UpdatePaymentMail;
+use Illuminate\Support\Facades\Notification;
 
 // use Symfony\Component\Translation\CatalogueMetadataAwareInterface;
 
@@ -136,6 +141,10 @@ InvoiceDetail::create([
                 'created_by' => Auth::user()->name,
             ]);
             }
+            // $user = User::find(1);
+            // $user = User::first();
+            // Notification::send($user, new AddInvoices($invoice));
+
         session()->flash('Add', "تمت إضافة الفاتورة بنجاح");
         return redirect()->back();
         // return view('invoices.index');
@@ -202,7 +211,8 @@ InvoiceDetail::create([
      */
     public function show( $id)
     {
-        $invoices = invoices::where('id',$id)->first();
+        // $invoices = invoices::where('id',$id)->first();
+        $invoices = invoices::findOrFail($id);
         $details  = InvoiceDetail::where('invoice_id',$id)->get();
         $attachments  = invoiceAttachment::where('invoice_id',$id)->get();
         return view('invoices.show',compact('invoices','details','attachments'));
@@ -397,6 +407,12 @@ public function updateStatus($id, Request $request)
             'payment_date'   => $request->payment_date,
             'user'           => Auth::user()->name,
         ]);
+        //  $users = User::where('status' , 1)->get();
+        // Notification::send($users, new invoiceDetail($invoice , $invoice->total + $invoice->amount_collection));
+        // $total = $invoice->amount_collection + $invoice->amount_commission;
+        //   Mail::to("test")->send(new UpdatePaymentMail($invoice,$total));
+        // Mail::to($user->email)->queue(new WelcomeUserMail($user));
+        // Auth::login($user);
         session()->flash('updateStates');
         // session()->flash('updateStates', 'تم تحديث حالة الفاتورة بنجاح');
     } catch (\Throwable $th) {
@@ -408,16 +424,70 @@ public function updateStatus($id, Request $request)
 }
 
 
+public function paidStatus(){
+
+    dd("test");
+    // $invoices = invoices::with('section')->orderBy('id','asc')->paginate(7);
+    // $invoices = invoices::where('value_status', 1)->get();
+
+// $invoices = invoices::with('section')->where('value_status', 1)
+//                 ->orderBy('id', 'asc')
+//                 ->paginate(7);
+                // dd($invoices);
+// $invoices = invoices::with('section')
+//     ->where('value_status', 1)
+//     ->get();
+// dd($invoices);
+//     return view('invoices.paid',compact('invoices'));
+    // return view('invoices.paid');
+                }
+
+// public function paid()
+// {
+//     $invoices = invoices::with('section')
+//         ->where('value_status', 1)
+//         ->whereHas('section')
+//         ->orderBy('id', 'asc')
+//         ->paginate(7);
+//   dd($invoices);
+//     return view('invoices.paid', compact('invoices'));
+// }
+
+public function unpaidStatus(){
+    $invoices = invoices::where('value_status',2)->get();
+    return view('invoices.unpaid',compact('invoices'));
+                }
+
+public function partialPaidStatus(){
+    $invoices = invoices::where('value_status',3)->get();
+    return view('invoices.partialpaid',compact('invoices'));
+                }
 
 
 
 
+//الارشيف
+//    public function destroy(Request $request)
+//     {
+//          $invoices = invoices::withTrashed()->where('id',$request->invoice_id)->first();
+//          $invoices->forceDelete();
+//          session()->flash('delete_invoice');
+//          return redirect('/Archive');
 
+//     }
+//   public function update(Request $request)
+//     {
+//          $id = $request->invoice_id;
+//          $flight = Invoices::withTrashed()->where('id', $id)->restore();
+//          session()->flash('restore_invoice');
+//          return redirect('/invoices');
+//     }
 
-
-
-
-
+    // public function index()
+    // {
+    //     $invoices = invoices::onlyTrashed()->get();
+    //     return view('Invoices.Archive_Invoices',compact('invoices'));
+    // }
 
 
 
