@@ -1,6 +1,9 @@
 @extends('layouts.master')
-@section('title', 'المستخدمين')
 @section('css')
+
+@section('title')المستخدمين
+@stop
+
 <!-- Internal Data table css -->
 
 <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
@@ -10,6 +13,7 @@
 <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css') }}" rel="stylesheet">
 <!--Internal   Notify -->
 <link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
+
 
 @endsection
 @section('page-header')
@@ -26,22 +30,78 @@
 @endsection
 
 @section('content')
+    @if (session()->has('Delete'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم حذف  المستخدم بنجاح",
+                    type: "success"
+                })}
+        </script>
+    @endif
+    {{-- @if (session()->has('updateStates'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم تحديث حالة الدفع بنجاح",
+                    type: "success"
+                }) }
+        </script>
+    @endif --}}
+    {{-- @if (session()->has('restore_invoice'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم استعادة الفاتورة بنجاح",
+                    type: "success"
+                })}
+        </script>
+    @endif --}}
+    @if (session()->has('Error'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "هناك خطا عند حذفا لمستخدم   ",
+                    type: "danger"
+                })}
+        </script>
+    @endif
+{{--@if (session('success'))--}}
+{{--    <div class="alert alert-success">--}}
+{{--        {{ session('success') }}--}}
+{{--    </div>--}}
+{{--@endif--}}
+{{-- @if (session()->has('success'))
+    <script>
+        window.onload = function() {
+            notif({
+                msg: "{{ session()->get('success') }} ",
+                type: "success"
+            })
+        }
 
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
+    </script>
 @endif
+@if (session()->has('error'))
+    <script>
+        window.onload = function() {
+            notif({
+                msg: "{{ session()->get('error') }}",
+                type: "error"
+            })
+        }
 
+    </script>
+@endif --}}
 <!-- row opened -->
 <div class="row row-sm">
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header pb-0">
                 <div class="col-sm-1 col-md-2">
-                    {{-- @can('اضافة مستخدم') --}}
+                    @can('create-user')
                         <a class="btn btn-primary btn-sm" href="{{ route('users.create') }}">اضافة مستخدم</a>
-                    {{-- @endcan --}}
+                    @endcan
                 </div>
             </div>
             <div class="card-body">
@@ -52,48 +112,61 @@
                                 <th class="wd-10p border-bottom-0">#</th>
                                 <th class="wd-15p border-bottom-0">اسم المستخدم</th>
                                 <th class="wd-20p border-bottom-0">البريد الالكتروني</th>
-                                <th class="wd-15p border-bottom-0">حالة المستخدم</th>
+                                <th class="wd-5p border-bottom-0">حالة المستخدم</th>
                                 <th class="wd-15p border-bottom-0">نوع المستخدم</th>
                                 <th class="wd-10p border-bottom-0">العمليات</th>
+
+
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $key => $user)
+{{--                        @php $i = 0 ; @endphp--}}
+                            @foreach ($users as $key => $user)
                                 <tr>
-                                    <td>{{ ++$i }}</td>
-                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $loop->iteration  }}</td>
+                                    <td class="fw-bold">{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>
-                                        @if ($user->Status == 'مفعل')
+                                        @if ($user->status == 1)
                                             <span class="label text-success d-flex">
-                                                <div class="dot-label bg-success ml-1"></div>{{ $user->Status }}
+                                                <div class="dot-label bg-success ml-1"></div>مفعل
                                             </span>
                                         @else
                                             <span class="label text-danger d-flex">
-                                                <div class="dot-label bg-danger ml-1"></div>{{ $user->Status }}
+                                                <div class="dot-label bg-danger ml-1"></div>غير مفعل
                                             </span>
                                         @endif
                                     </td>
 
                                     <td>
-                                        @if (!empty($user->getRoleNames()))
-                                            @foreach ($user->getRoleNames() as $v)
-                                                <label class="badge badge-success">{{ $v }}</label>
+                                        @if ($user->getRoleNames()->isNotEmpty())
+                                            @foreach ($user->getRoleNames() as $role)
+                                                <label class="badge badge-success">{{ $role }}</label>
                                             @endforeach
+                                        @else
+                                            <label class="badge badge-danger">غير معين</label>
                                         @endif
+
                                     </td>
 
                                     <td>
-                                        {{-- @can('تعديل مستخدم') --}}
+                                        @can('edit-user')
                                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-info"
                                                 title="تعديل"><i class="las la-pen"></i></a>
                                         @endcan
 
-                                        {{-- @can('حذف مستخدم') --}}
-                                            <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
+                                        @can('delete-user')
+                                            {{-- <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
                                                 data-user_id="{{ $user->id }}" data-username="{{ $user->name }}"
                                                 data-toggle="modal" href="#modaldemo8" title="حذف"><i
-                                                    class="las la-trash"></i></a>
+                                                    class="las la-trash"></i></a> --}}
+
+                <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;"
+                    onsubmit="return confirm('هل أنت متأكد أنك تريد الحذف نهائيًا؟')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm">حذف</button></form>
+
                                         @endcan
                                     </td>
                                 </tr>
@@ -107,16 +180,16 @@
     <!--/div-->
 
     <!-- Modal effects -->
-    <div class="modal" id="modaldemo8">
+    {{-- <div class="modal" id="modaldemo8">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
                 <div class="modal-header">
                     <h6 class="modal-title">حذف المستخدم</h6><button aria-label="Close" class="close"
                         data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
                 </div>
-                <form action="{{ route('users.destroy', 'test') }}" method="post">
-                    {{ method_field('delete') }}
-                    {{ csrf_field() }}
+                <form action="{{ route('users.destroy') }}" method="post">
+                    @csrf
+                    @method('DELETE')
                     <div class="modal-body">
                         <p>هل انت متاكد من عملية الحذف ؟</p><br>
                         <input type="hidden" name="user_id" id="user_id" value="">
@@ -130,7 +203,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 </div>
 <!-- /row -->
@@ -158,7 +231,7 @@
 <!-- Internal Modal js-->
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
 
-<script>
+{{-- <script>
     $('#modaldemo8').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         var user_id = button.data('user_id')
@@ -166,9 +239,13 @@
         var modal = $(this)
         modal.find('.modal-body #user_id').val(user_id);
         modal.find('.modal-body #username').val(username);
+
+        var form = modal.find('form');
+        var newActionUrl = '{{ route('users.destroy', '') }}' + '/' + user_id;
+        form.attr('action', newActionUrl);
     })
 
-</script>
+</script> --}}
 
 
 @endsection

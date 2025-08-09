@@ -52,7 +52,7 @@ Route::resources([
 // Route::resource('invoices',InvoicesController::class);
 
 // Route::put('invoices/status/{id}', [InvoicesController::class, 'updateStatus'])->name('invoices.updateStatus');
-Route::get('/{page}', [AdminController::class, 'index']);
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -72,7 +72,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
+//call pages using var with url 
+Route::get('/{page}', [AdminController::class, 'index']);
 
 
 

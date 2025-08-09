@@ -58,7 +58,7 @@
             window.onload = function() {
                 notif({
                     msg: "تم استعادة الفاتورة بنجاح",
-                    type: "success"
+                    type: "danger"
                 })}
         </script>
     @endif

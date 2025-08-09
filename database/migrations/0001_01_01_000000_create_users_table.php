@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration //is anonymous class name to don't take a space in memory 
+return new class extends Migration //is anonymous class name to don't take a space in memory
 {
     /**
      * Run the migrations.
@@ -17,6 +17,9 @@ return new class extends Migration //is anonymous class name to don't take a spa
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('status')->default('1');
+            // $table->text('roles_name');
+            // $table->string('status', 10);
             $table->rememberToken();
             $table->timestamps();
         });
