@@ -173,20 +173,17 @@ public function destroy($id): RedirectResponse
 {
     try {
         $user = User::findOrFail($id);
-        // التحقق من عدم حذف المالك أو المستخدم الحالي
         if ($user->hasRole('owner') || $user->id == auth()->id()) {
             abort(403, 'USER DOES NOT HAVE THE RIGHT PERMISSIONS');
         }
-        // إزالة الأدوار قبل الحذف
         $user->syncRoles([]);
         $user->delete();
         session()->flash('Delete');
         // session()->flash('Delete', 'تم حذف المستخدم بنجاح');
         // return redirect()->route('users.index');
     } catch (\Throwable $th) {
-        // تسجيل الخطأ في لوج مخصص
         Log::channel("invoice")->error(
-            $th->getMessage() . ' - ' . $th->getFile() . ' - Line: ' . $th->getLine()
+            $th->getMessage()  . $th->getFile()  . $th->getLine()
         );
         session()->flash('Error');
         // session()->flash('Error', 'حدث خطأ أثناء الحذف');

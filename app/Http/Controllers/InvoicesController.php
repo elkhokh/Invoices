@@ -40,15 +40,13 @@ class InvoicesController extends Controller
             $query->where('invoice_number', 'like', "%{$search}%");
         }
         $invoices = $query->orderBy('id', 'asc')->paginate(7);
-
         if ($search && $invoices->isEmpty()) {
             session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
-            $search = '';
-        }
+            $search = '';  }
         return view('invoices.index', compact('secttion', 'invoices', 'search'));
     } catch (\Throwable $th) {
         Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        return redirect()->back()->with('error', 'حدث خطأ أثناء عرض المنتجات');
+        return redirect()->back()->with('Error');
     }
 
     }
@@ -96,7 +94,6 @@ public function create()
     {
         try{
         $data = $request->validated();
-
         // dd($data);
         $invoice = invoices::create([
     'invoice_number'    => $data['invoice_number'],
@@ -115,7 +112,6 @@ public function create()
     'value_status'      => 2,
     'user_id'           => Auth::id(),
 ]);
-
 InvoiceDetail::create([
     'invoice_id'     => $invoice->id,
     'invoice_number' => $invoice->invoice_number,
@@ -126,7 +122,6 @@ InvoiceDetail::create([
     'note'           => $invoice->note,
     'user'           => Auth::user()->name,
 ]);
-
         if ($request->hasFile('file_name')) {
             $file = $request->file('file_name');
             // file_name - upload file in storage - save to var
@@ -145,7 +140,7 @@ InvoiceDetail::create([
             // $user = User::first();
             // Notification::send($user, new AddInvoices($invoice));
 
-        session()->flash('Add', "تمت إضافة الفاتورة بنجاح");
+        session()->flash('Add');
         return redirect()->back();
         // return view('invoices.index');
 
@@ -244,7 +239,7 @@ InvoiceDetail::create([
 
         } catch (\Throwable $th) {
         Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        return redirect()->back()->with('Error', 'حدث خطأ أثناء  تحميل الفاتورة لتعديل ');
+        return redirect()->back()->with('Error');
     }
 }
 
@@ -312,11 +307,11 @@ InvoiceDetail::create([
             'note' => $request->note,
         ]);
         DB::commit();
-        session()->flash('Edit', 'تم تعديل الفاتورة بنجاح');
+        session()->flash('Edit');
     } catch (\Exception $th) {
         DB::rollBack();
         Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        session()->flash('Error', 'حدث خطأ أثناء التعديل: ' . $th->getMessage());
+        session()->flash('Error');
     }
     return redirect()->back();
     }
@@ -337,15 +332,14 @@ InvoiceDetail::create([
             }
             $attachment->delete();
         }
-        $invoice->forceDelete();// forece delete
-        // $invoice->delete();// soft delete
+        // $invoice->forceDelete();// forece delete
+        $invoice->delete();// soft delete
         session()->flash('Delete');
         // session()->flash('Delete', 'تم حذف القسم بنجاح');
     } catch (\Throwable $th) {
         Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        session()->flash('Error', 'حدث خطأ أثناء الحذف');
+        session()->flash('Error');
     }
-
     return redirect()->back();
 }
 
@@ -357,7 +351,7 @@ public function getFileStatus($id)
     return view('invoices.status', compact('invoices'));
   } catch (\Throwable $th) {
         Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
-        session()->flash('Error', 'حدث خطأ أثناء الحذف');
+        session()->flash('Error');
         return redirect()->back();
     }
 }
@@ -424,22 +418,30 @@ public function updateStatus($id, Request $request)
 }
 
 
-public function paidStatus(){
+public function paidStatus(Request $request){
+            try {
+        // $invoices = invoices::with('section')->where('value_status', 1)->orderBy('id', 'asc')->paginate(7);
+        $search = $request->input('search');
+        $secttion = sections::all();
+        $query = invoices::with('section')->where('value_status', 1);
+        if ($search) {
+            $query->where('invoice_number', 'like', "%{$search}%");}
+        $invoices = $query->orderBy('id', 'asc')->paginate(7);
+        if ($search && $invoices->isEmpty()) {
+            session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
+            $search = '';  }
+            return view('invoices.paid',['invoices'=>$invoices ,
+                                                        'search'=>$search,
+                                                        'section'=>$secttion]);
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage().$th->getFile(). $th->getLine());
+        return redirect()->back()->with('Error');
+    }
 
-    dd("test");
-    // $invoices = invoices::with('section')->orderBy('id','asc')->paginate(7);
-    // $invoices = invoices::where('value_status', 1)->get();
 
-// $invoices = invoices::with('section')->where('value_status', 1)
-//                 ->orderBy('id', 'asc')
-//                 ->paginate(7);
-                // dd($invoices);
-// $invoices = invoices::with('section')
-//     ->where('value_status', 1)
-//     ->get();
-// dd($invoices);
-//     return view('invoices.paid',compact('invoices'));
-    // return view('invoices.paid');
+
+// return $invoices ;
+
                 }
 
 // public function paid()
@@ -453,62 +455,99 @@ public function paidStatus(){
 //     return view('invoices.paid', compact('invoices'));
 // }
 
-public function unpaidStatus(){
-    $invoices = invoices::where('value_status',2)->get();
-    return view('invoices.unpaid',compact('invoices'));
+public function unpaidStatus(Request $request){
+            try {
+        // $invoices = invoices::with('section')->where('value_status', 2)->orderBy('id', 'asc')->paginate(7);
+        $search = $request->input('search');
+        $secttion = sections::all();
+        $query = invoices::with('section')->where('value_status', 2);
+        if ($search) {
+            $query->where('invoice_number', 'like', "%{$search}%");}
+        $invoices = $query->orderBy('id', 'asc')->paginate(7);
+        if ($search && $invoices->isEmpty()) {
+            session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
+            $search = '';  }
+            return view('invoices.paid',['invoices'=>$invoices ,
+                                        'search'=>$search,
+                                        'section'=>$secttion]);
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage().$th->getFile(). $th->getLine());
+        return redirect()->back()->with('Error');
+    }
+}
+public function partialPaidStatus(Request $request){
+
+            try {
+        // $invoices = invoices::with('section')->where('value_status', 3)->orderBy('id', 'asc')->paginate(7);
+        $search = $request->input('search');
+        $secttion = sections::all();
+        $query = invoices::with('section')->where('value_status', 3);
+        if ($search) {
+            $query->where('invoice_number', 'like', "%{$search}%");}
+        $invoices = $query->orderBy('id', 'asc')->paginate(7);
+        if ($search && $invoices->isEmpty()) {
+            session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
+            $search = '';  }
+            return view('invoices.paid',['invoices'=>$invoices ,
+                                                        'search'=>$search,
+                                                        'section'=>$secttion]);
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage().$th->getFile(). $th->getLine());
+        return redirect()->back()->with('Error');
+    }
                 }
 
-public function partialPaidStatus(){
-    $invoices = invoices::where('value_status',3)->get();
-    return view('invoices.partialpaid',compact('invoices'));
-                }
+    public function showArchive(Request $request){
+        try {
+        $search = $request->input('search');
+        $query = Invoices::onlyTrashed()->with('section');
+        if ($search) {
+            $query->where('invoice_number', 'like', "%{$search}%");
+        }
+        $invoices = $query->orderBy('id', 'asc')->paginate(7);
+        if ($search && $invoices->isEmpty()) {
+            session()->flash('not_found', 'لا يوجد نتائج مطابقة لكلمة البحث "' . $search . '"');
+            $search = '';  }
+        return view('invoices.archive', compact( 'invoices', 'search'));
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        return redirect()->back()->with('Error');
+    }
+    }
 
+    public function forceDelete($id){
+                    try {
+        $invoice = invoices::with('invoiceAttachment')->findOrFail($id);
+        foreach ($invoice->invoiceAttachment as $attachment) {
+            $filePath = 'invoices_file/' . $attachment->file_name;
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+            $attachment->delete();
+        }
+        $invoice->forceDelete();// forece delet       // $invoice->delete();// soft delete
+        session()->flash('Delete');
+        // session()->flash('Delete', 'تم حذف القسم بنجاح');
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('Error');
+    }
+    return redirect()->back();
+    }
 
+    public function restore($id){
+        // Invoices::withTrashed()->where('id', $id)->restore();
+        try {
+        Invoices::withTrashed()->where('id', $id)->firstOrFail()->restore();
+        session()->flash('restore_invoice', 'تم استرجاع الفاتورة بنجاح');
+        return redirect()->route('invoices.index');
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        session()->flash('Error', 'حصل خطأ أثناء استرجاع الفاتورة');
+        return redirect()->back();
+    }
 
-
-//الارشيف
-//    public function destroy(Request $request)
-//     {
-//          $invoices = invoices::withTrashed()->where('id',$request->invoice_id)->first();
-//          $invoices->forceDelete();
-//          session()->flash('delete_invoice');
-//          return redirect('/Archive');
-
-//     }
-//   public function update(Request $request)
-//     {
-//          $id = $request->invoice_id;
-//          $flight = Invoices::withTrashed()->where('id', $id)->restore();
-//          session()->flash('restore_invoice');
-//          return redirect('/invoices');
-//     }
-
-    // public function index()
-    // {
-    //     $invoices = invoices::onlyTrashed()->get();
-    //     return view('Invoices.Archive_Invoices',compact('invoices'));
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 }
 
 

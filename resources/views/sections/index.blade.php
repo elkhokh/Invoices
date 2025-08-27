@@ -224,7 +224,9 @@
 {{-- <script src="{{ URL::asset('assets/js/table-data.js') }}"></script> --}}
 {{-- show pagenation --}}
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
-
+<!--Internal  Notify js -->
+<script src="{{ URL::asset('assets/plugins/notify/js/notifIt.js') }}"></script>
+<script src="{{ URL::asset('assets/plugins/notify/js/notifit-custom.js') }}"></script>
 <script>
     @if ($errors->any())
         $(document).ready(function () {

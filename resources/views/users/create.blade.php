@@ -77,7 +77,7 @@
                 </div><br>
                 <form class="parsley-style-1" id="selectForm2" autocomplete="off" name="selectForm2"
                     action="{{route('users.store')}}" method="post">
-                    {{csrf_field()}}
+                    @csrf 
 
                     <div class="">
 
@@ -107,7 +107,7 @@
                         <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
                             <label>تأكيد كلمة المرور: <span class="tx-danger">*</span></label>
                             <input class="form-control form-control-sm mg-b-20" data-parsley-class-handler="#lnWrapper"
-                                   name="password_confirmation" required type="password">
+                                name="password_confirmation" required type="password">
                         </div>
 
 
@@ -131,10 +131,10 @@
                                     @foreach ($roles as $key => $role)
                                         <div class="form-check my-2">
                                             <input class="form-check-input"
-                                                   type="checkbox"
-                                                   name="roles_name[]"
-                                                   id="role{{ $key }}"
-                                                   value="{{ $role }}">
+                                                type="checkbox"
+                                                name="roles_name[]"
+                                                id="role{{ $key }}"
+                                                value="{{ $role }}">
                                             <label class="form-check-label mx-4" for="role{{ $key }}">
                                                 {{ $role }}
 

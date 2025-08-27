@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class invoices extends Model
 {
-    use HasFactory , SoftDeletes ;
+    use HasFactory , SoftDeletes ; 
         protected $fillable = [
             'invoice_number',
             'invoice_date',

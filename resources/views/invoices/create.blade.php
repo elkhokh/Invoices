@@ -25,16 +25,24 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
+            @if (session()->has('Add'))
+<script>
+    window.onload = function() {
+        $('#modaldemo4').modal('show');
+    }
+</script>
+@endif
   <div class="row">
     <div class="container mt-3">
-    @if(session()->has('Add'))
+
+    {{-- @if(session()->has('Add'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
             <strong>{{ session('Add') }}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
         </div>
-    @endif
+    @endif --}}
     @if(session()->has('Error'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
             <strong>{{ session('Add') }}</strong>
@@ -212,6 +220,22 @@
     <!-- Container closed -->
     </div>
     <!-- main-content closed -->
+
+    <!-- Modal message -->
+<div class="modal fade" id="modaldemo4" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 380px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+            <div class="modal-body" style="padding: 30px 25px; text-align: center;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute; top: 15px; right: 20px; opacity: 0.6;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <i class="icon ion-ios-checkmark-circle-outline" style="font-size: 70px; color: #28a745; margin-bottom: 20px; display: inline-block;"></i>
+                <h4 style="color: #28a745; font-size: 18px; font-weight: 600; margin-bottom: 25px;">تم اضافة الفاتورة </h4>
+                <button type="button" class="btn" data-dismiss="modal" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none; border-radius: 25px; padding: 10px 30px; color: white; font-weight: 600;"> متابعة </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('js')
     <!-- Internal Select2 js-->

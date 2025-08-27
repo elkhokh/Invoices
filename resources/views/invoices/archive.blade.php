@@ -1,15 +1,29 @@
 @extends('layouts.master')
-@section("title", "الفواتير غير المدفوعة")
+@section("title", "الفواتير")
 {{-- @stop  --}}
 @section('css')
+    <!-- Internal Data table css -->
+    <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ URL::asset('assets/plugins/datatable/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
+    <!--Internal   Notify -->
+<link href="{{URL::asset('assets/plugins/owl-carousel/owl.carousel.css')}}" rel="stylesheet">
+<link href="{{URL::asset('assets/plugins/multislider/multislider.css')}}" rel="stylesheet">
+<link href="{{URL::asset('assets/plugins/accordion/accordion.css')}}" rel="stylesheet" />
+<link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
+{{-- @endsection --}}
+    <link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
 @endsection
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">الفواتير غير المدفوعة</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ قائمة
-                    الفواتير غير المدفوعة </span>
+                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ قائمة
+                    الفواتير</span>
             </div>
         </div>
 
@@ -17,6 +31,51 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
+    @if (session()->has('Delete'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم حذف الفاتورة بنجاح",
+                    type: "success"
+                })}
+        </script>
+    @endif
+    @if (session()->has('updateStates'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم تحديث حالة الدفع بنجاح",
+                    type: "success"
+                }) }
+        </script>
+    @endif
+    @if (session()->has('restore_invoice'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم استعادة الفاتورة بنجاح",
+                    type: "success"
+                })}
+        </script>
+    @endif
+
+@if (session()->has('Add'))
+<script>
+    window.onload = function() {
+        $('#modaldemo4').modal('show');
+    }
+</script>
+@endif
+
+@if (session()->has('Update'))
+<script>
+    window.onload = function() {
+        $('#modalUpdateSuccess').modal('show');
+    }
+</script>
+@endif
+
+
 @if (session()->has('Error'))
 <script>
     window.onload = function() {
@@ -30,9 +89,18 @@
     <!-- row -->
 <div class="row">
 <div class="container mt-3">
+
     @if(session()->has('not_found'))
     <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
         <strong>{{ session('not_found') }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
+    @if(session()->has('Error'))
+    <div class="alert alert-warning alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
+        <strong>{{ session('Error') }}</strong>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -57,7 +125,7 @@
     </div>
 
     {{-- Search Form --}}
-    <form method="GET" action="{{ route('invoices.paid') }}" class="d-flex" style="gap: 10px; max-width: 400px;">
+    <form method="GET" action="{{ route('invoices.index') }}" class="d-flex" style="gap: 10px; max-width: 400px;">
         <input type="text" name="search" class="form-control" placeholder="ابحث برقم الفاتورة    "
             value="{{ $search}}">
         <button class="btn btn-primary" type="submit">
@@ -65,6 +133,7 @@
         </button>
     </form>
 </div>
+
 
                 <div class="card-body">
                     <div class="table-responsive">
@@ -111,7 +180,7 @@
                                             @endif
                                         </td>
                                         {{-- <td>{{ $invoice->note }}</td> --}}
-                        <td>{{ \Illuminate\Support\Str::limit($invoice->note, 20, '..') }}</td>
+                                <td>{{ \Illuminate\Support\Str::limit($invoice->note, 20, '...') }}</td>
 <td>
     <div class="dropdown">
         <button aria-expanded="false" aria-haspopup="true"
@@ -121,7 +190,6 @@
         </button>
         <div class="dropdown-menu tx-13">
 
-            {{-- تعديل الفاتورة --}}
             <form action="{{ route('invoices.edit', $invoice->id) }}" method="GET">
                 @csrf
                 <button type="submit" class="dropdown-item">
@@ -129,34 +197,32 @@
                 </button>
             </form>
 
-            {{-- حذف الفاتورة --}}
-            <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST"
-                onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+              <form action="{{ route('invoices.restore', $invoice->id) }}" method="POST" style="display:inline-block;"
+                  onsubmit="return confirm('هل تريد استرجاع الفاتورة  ');">
                 @csrf
-                @method('DELETE')
-                <button type="submit" class="dropdown-item text-danger">
-                    <i class="fas fa-trash-alt"></i> حذف الفاتورة
+                @method('PATCH')
+                <button type="submit" class="dropdown-item text-success">
+                    <i class="fas fa-undo"></i> استرجاع الفاتورة
                 </button>
             </form>
 
-            {{-- تغيير حالة الدفع --}}
+
             <form action="{{ route('invoices.getFileStatus', $invoice->id) }}" method="GET">
     <button type="submit" class="dropdown-item">
         <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
     </button>
                     </form>
 
-            {{-- نقل إلى الأرشيف (يفترض أنك عندك route اسمه archive أو مشابه) --}}
-            <form action="{{ route('invoices.show', $invoice->id) }}" method="POST"
-                onsubmit="return confirm('هل تريد نقل الفاتورة إلى الأرشيف؟');">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="dropdown-item text-warning">
-                    <i class="fas fa-exchange-alt"></i> نقل إلى الأرشيف
+            <form action="{{ route('invoices.forceDelete', $invoice->id) }}" method="POST"
+                onsubmit="return confirm('هل تريد حذف الفاتورة  نهائيا');">
+                      @csrf
+                @method('DELETE')
+                <button type="submit" class="dropdown-item text-danger">
+                    <i class="fas fa-trash-alt"></i> حذف الفاتورة
                 </button>
+
             </form>
 
-            {{-- رؤية تفاصيل الفاتورة --}}
             <form action="{{ route('invoices.show', $invoice->id) }}" method="GET">
                 @csrf
                 <button type="submit" class="dropdown-item">
@@ -164,25 +230,41 @@
                 </button>
             </form>
 
-            {{-- طباعة الفاتورة --}}
+
             <form action="{{ url('Print_invoice', $invoice->id) }}" method="GET" target="_blank">
                 @csrf
                 <button type="submit" class="dropdown-item">
                     <i class="text-success fas fa-print"></i> طباعة الفاتورة
                 </button>
             </form>
+
         </div>
     </div>
 </td>
                         </tr>
                                 @endforeach
+
                             </tbody>
                         </table>
                     {{ $invoices->links() }}
                     {{-- {{ $invoices->appends(request()->query())->links() }} --}}
-</div></div></div></div> </div></div></div></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/div-->
+    </div>
+
+
+    </div>
+    <!-- row closed -->
+    </div>
+
+    </div>
 
 @endsection
 @section('js')
+
 
 @endsection

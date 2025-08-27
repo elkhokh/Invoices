@@ -10,6 +10,11 @@
     <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
     <!--Internal   Notify -->
+<link href="{{URL::asset('assets/plugins/owl-carousel/owl.carousel.css')}}" rel="stylesheet">
+<link href="{{URL::asset('assets/plugins/multislider/multislider.css')}}" rel="stylesheet">
+<link href="{{URL::asset('assets/plugins/accordion/accordion.css')}}" rel="stylesheet" />
+<link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
+{{-- @endsection --}}
     <link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
 @endsection
 @section('page-header')
@@ -53,15 +58,34 @@
                 })}
         </script>
     @endif
-    @if (session()->has('Error'))
-        <script>
-            window.onload = function() {
-                notif({
-                    msg: "تم استعادة الفاتورة بنجاح",
-                    type: "danger"
-                })}
-        </script>
-    @endif
+
+@if (session()->has('Add'))
+<script>
+    window.onload = function() {
+        $('#modaldemo4').modal('show');
+    }
+</script>
+@endif
+
+@if (session()->has('Update'))
+<script>
+    window.onload = function() {
+        $('#modalUpdateSuccess').modal('show');
+    }
+</script>
+@endif
+
+
+@if (session()->has('Error'))
+<script>
+    window.onload = function() {
+        notif({ msg: "حدث خطأ أثناء العملية",
+         type: "info",
+         position: "center", timeout: 3000 });
+    }
+</script>
+@endif
+
     <!-- row -->
 <div class="row">
 <div class="container mt-3">
@@ -173,7 +197,6 @@
         </button>
         <div class="dropdown-menu tx-13">
 
-            {{-- تعديل الفاتورة --}}
             <form action="{{ route('invoices.edit', $invoice->id) }}" method="GET">
                 @csrf
                 <button type="submit" class="dropdown-item">
@@ -181,17 +204,16 @@
                 </button>
             </form>
 
-            {{-- حذف الفاتورة --}}
             <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST"
-                onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+              onsubmit="return confirm('هل تريد نقل الفاتورة إلى الأرشيف؟');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="dropdown-item text-danger">
-                    <i class="fas fa-trash-alt"></i> حذف الفاتورة
+                <button type="submit" class="dropdown-item text-warning">
+                    <i class="fas fa-exchange-alt"></i> ارشفة الفاتورة
                 </button>
             </form>
 
-            {{-- تغيير حالة الدفع --}}
+
             {{-- <form action="{{ route('invoices.getFileStatus', $invoice->id) }}" method="POST">
                 @csrf
                 <button type="submit" class="dropdown-item">
@@ -204,18 +226,16 @@
     </button>
                     </form>
 
-
-            {{-- نقل إلى الأرشيف (يفترض أنك عندك route اسمه archive أو مشابه) --}}
-            <form action="{{ route('invoices.show', $invoice->id) }}" method="POST"
-                onsubmit="return confirm('هل تريد نقل الفاتورة إلى الأرشيف؟');">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="dropdown-item text-warning">
-                    <i class="fas fa-exchange-alt"></i> نقل إلى الأرشيف
+            <form action="{{ route('invoices.forceDelete', $invoice->id) }}" method="POST"
+                onsubmit="return confirm('هل تريد حذف الفاتورة  نهائيا');">
+                      @csrf
+                @method('DELETE')
+                <button type="submit" class="dropdown-item text-danger">
+                    <i class="fas fa-trash-alt"></i> حذف الفاتورة
                 </button>
+
             </form>
 
-            {{-- رؤية تفاصيل الفاتورة --}}
             <form action="{{ route('invoices.show', $invoice->id) }}" method="GET">
                 @csrf
                 <button type="submit" class="dropdown-item">
@@ -223,7 +243,7 @@
                 </button>
             </form>
 
-            {{-- طباعة الفاتورة --}}
+
             <form action="{{ url('Print_invoice', $invoice->id) }}" method="GET" target="_blank">
                 @csrf
                 <button type="submit" class="dropdown-item">
@@ -311,6 +331,45 @@
     <!-- Container closed -->
     </div>
     <!-- main-content closed -->
+
+
+<!-- Modal message -->
+<div class="modal fade" id="modaldemo4" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 380px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+            <div class="modal-body" style="padding: 30px 25px; text-align: center;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute; top: 15px; right: 20px; opacity: 0.6;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <i class="icon ion-ios-checkmark-circle-outline" style="font-size: 70px; color: #28a745; margin-bottom: 20px; display: inline-block;"></i>
+                <h4 style="color: #28a745; font-size: 18px; font-weight: 600; margin-bottom: 25px;">تم اضافة الفاتورة </h4>
+                <button type="button" class="btn" data-dismiss="modal" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none; border-radius: 25px; padding: 10px 30px; color: white; font-weight: 600;"> متابعة </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalUpdateSuccess" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 380px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+            <div class="modal-body" style="padding: 30px 25px; text-align: center;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        style="position: absolute; top: 15px; right: 20px; opacity: 0.6;">
+                     <span aria-hidden="true">&times;</span>
+                </button>
+                <i class="icon ion-ios-checkmark-circle-outline"
+                   style="font-size: 70px; color: #2d047f; margin-bottom: 20px; display: inline-block;"></i>
+                <h4 style="color: #34059a; font-size: 18px; font-weight: 600; margin-bottom: 25px;">
+                    تم التعديل الفاتورة
+                </h4>
+                <button type="button" class="btn" data-dismiss="modal"
+                        style="background: linear-gradient(135deg, #00055e 0%, #001aaa 100%);
+                border: none; border-radius: 25px; padding: 10px 30px; color: white; font-weight: 600;">
+                    متابعة
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('js')
     <!-- Internal Data tables -->
@@ -335,6 +394,10 @@
     <!--Internal  Notify js -->
     <script src="{{ URL::asset('assets/plugins/notify/js/notifIt.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/notify/js/notifit-custom.js') }}"></script>
+    <script src="{{URL::asset('assets/js/accordion.js')}}"></script>
+<script src="{{ URL::asset('assets/plugins/notify/js/notifIt.js') }}"></script>
+<script src="{{ URL::asset('assets/plugins/notify/js/notifit-custom.js') }}"></script>
+<script src="{{URL::asset('assets/js/modal.js')}}"></script>
 
 
 

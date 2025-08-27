@@ -38,6 +38,7 @@
     <li><a class="slide-item" href="{{ route('invoices.paid') }}" style="font-weight: bold;">الفواتير المدفوعة</a></li>
     <li><a class="slide-item" href="{{ route('invoices.unpaid') }}" style="font-weight: bold;">الفواتير الغير مدفوعة</a></li>
     <li><a class="slide-item" href="{{ route('invoices.partialPaid') }}" style="font-weight: bold;">الفواتير المدفوعة جزئيا</a></li>
+    <li><a class="slide-item" href="{{ route('invoices.archive') }}" style="font-weight: bold;">الفواتير  المؤرشفة</a></li>
 </ul>
             </li>
             <li class="side-item side-item-category" style="font-weight: bold;">التقارير</li>

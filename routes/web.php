@@ -28,6 +28,9 @@ Route::patch('invoices/status/{id}', [InvoicesController::class, 'updateStatus']
 Route::get('invoices/paid', [InvoicesController::class, 'paidStatus'])->name('invoices.paid');
 Route::get('invoices/unpaid', [InvoicesController::class, 'unpaidStatus'])->name('invoices.unpaid');
 Route::get('invoices/partialPaid', [InvoicesController::class, 'partialPaidStatus'])->name('invoices.partialPaid');
+Route::get('invoices/archive', [InvoicesController::class, 'showArchive'])->name('invoices.archive');
+Route::delete('invoices/force/{id}', [InvoicesController::class, 'forceDelete'])->name('invoices.forceDelete');
+Route::patch('invoices/restore/{id}', [InvoicesController::class, 'restore'])->name('invoices.restore');
 
 Route::resources([
     'attachment' => InvoiceAttachmentController::class,
@@ -72,7 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-//call pages using var with url 
+//call pages using var with url
 Route::get('/{page}', [AdminController::class, 'index']);
 
 

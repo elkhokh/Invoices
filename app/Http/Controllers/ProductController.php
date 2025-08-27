@@ -1,10 +1,5 @@
 <?php
-//BUG:  lllllllll
-//HACK: lllllllll
-//INFO: lllllllll
-//TODO: 111111111
-//IDEA: 111111111
-//FIXME:111111111
+
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -24,6 +19,7 @@ class ProductController extends Controller
 
 public function index(Request $request)
 {
+    
     try {
         $search = $request->input('search');
         $sections = sections::all();
@@ -106,7 +102,6 @@ public function update(UpdateProductRequest $request, Product $product)
 
     try {
         $product->update($request->validated());
-
         DB::commit();
         return back()->with('Edit', 'تم تعديل المنتج بنجاح');
     } catch (\Throwable $th) {
