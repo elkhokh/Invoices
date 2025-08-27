@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 
 // use Barryvdh\DomPDF\Facade\Pdf;
+
+use App\Exports\InvoicesExport;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\invoices;
@@ -11,6 +13,7 @@ use App\Models\sections;
 use Illuminate\Http\Request;
 // use PhpParser\Node\Stmt\Catch_;
 use App\Models\InvoiceDetail;
+use App\Mail\UpdatePaymentMail;
 use Illuminate\Validation\Rule;
 use App\Models\InvoiceAttachment;
 use App\Notifications\AddInvoices;
@@ -18,9 +21,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreInvoiceRequest;
-use App\Mail\UpdatePaymentMail;
 use Illuminate\Support\Facades\Notification;
 
 // use Symfony\Component\Translation\CatalogueMetadataAwareInterface;
@@ -560,6 +563,34 @@ public function printInvoice($id)
         return redirect()->back()->with('Error', 'حدث خطأ أثناء تحميل صفحة الطباعة');
     }
 }
+
+
+    public function export()
+    {
+        // return 'test ';
+        return Excel::download(new InvoicesExport, 'invoices.xlsx');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // composer require barryvdh/laravel-dompdf
 
     // public function downloadPDF($id)

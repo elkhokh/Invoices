@@ -32,6 +32,7 @@ Route::get('invoices/archive', [InvoicesController::class, 'showArchive'])->name
 Route::delete('invoices/force/{id}', [InvoicesController::class, 'forceDelete'])->name('invoices.forceDelete');
 Route::patch('invoices/restore/{id}', [InvoicesController::class, 'restore'])->name('invoices.restore');
 Route::post('invoices/print/{id}', [InvoicesController::class, 'printInvoice'])->name('invoices.print');
+Route::get('invoices/export/', [InvoicesController::class, 'export'])->name('invoices.export');
 
 Route::resources([
     'attachment' => InvoiceAttachmentController::class,

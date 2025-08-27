@@ -132,7 +132,7 @@
         {{-- @endcan --}}
 
         {{-- @can('تصدير EXCEL') --}}
-        <a href="{{ url('export_invoices') }}" class="btn btn-info">
+        <a href="{{ route('invoices.export') }}" class="btn btn-info">
             <i class="fas fa-file-download"></i>&nbsp; تصدير Excel
         </a>
         {{-- @endcan --}}
