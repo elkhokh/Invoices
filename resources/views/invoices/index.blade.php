@@ -1,7 +1,14 @@
 @extends('layouts.master')
 @section("title", "الفواتير")
-{{-- @stop  --}}
 @section('css')
+@media print {
+    .btn-print {
+        display: none;
+    }
+    .no-print {
+        display: none;
+    }
+}
     <!-- Internal Data table css -->
     <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
     <link href="{{ URL::asset('assets/plugins/datatable/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
@@ -228,7 +235,7 @@
 
             <form action="{{ route('invoices.forceDelete', $invoice->id) }}" method="POST"
                 onsubmit="return confirm('هل تريد حذف الفاتورة  نهائيا');">
-                      @csrf
+                @csrf
                 @method('DELETE')
                 <button type="submit" class="dropdown-item text-danger">
                     <i class="fas fa-trash-alt"></i> حذف الفاتورة
@@ -244,12 +251,16 @@
             </form>
 
 
-            <form action="{{ url('Print_invoice', $invoice->id) }}" method="GET" target="_blank">
+            <form action="{{ route('invoices.print', $invoice->id) }}" method="POST" target="_blank"  class="no-print">
                 @csrf
                 <button type="submit" class="dropdown-item">
                     <i class="text-success fas fa-print"></i> طباعة الفاتورة
                 </button>
             </form>
+
+            {{-- <a href="{{ route('invoices.print', $invoice->id) }}" target="_blank" class="dropdown-item">
+    <i class="text-success fas fa-print"></i> طباعة الفاتورة
+</a> --}}
 
         </div>
     </div>

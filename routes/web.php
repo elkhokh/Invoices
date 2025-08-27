@@ -31,6 +31,7 @@ Route::get('invoices/partialPaid', [InvoicesController::class, 'partialPaidStatu
 Route::get('invoices/archive', [InvoicesController::class, 'showArchive'])->name('invoices.archive');
 Route::delete('invoices/force/{id}', [InvoicesController::class, 'forceDelete'])->name('invoices.forceDelete');
 Route::patch('invoices/restore/{id}', [InvoicesController::class, 'restore'])->name('invoices.restore');
+Route::post('invoices/print/{id}', [InvoicesController::class, 'printInvoice'])->name('invoices.print');
 
 Route::resources([
     'attachment' => InvoiceAttachmentController::class,

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+// use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\invoices;
@@ -136,8 +138,8 @@ InvoiceDetail::create([
                 'created_by' => Auth::user()->name,
             ]);
             }
-            // $user = User::find(1);
-            // $user = User::first();
+            $users = User::first();
+            Notification::send($users, new AddInvoices($invoice));
             // Notification::send($user, new AddInvoices($invoice));
 
         session()->flash('Add');
@@ -412,7 +414,6 @@ public function updateStatus($id, Request $request)
     } catch (\Throwable $th) {
         Log::channel("invoice")->error($th->getMessage() . ' in ' . $th->getFile() . ' on line ' . $th->getLine());
         session()->flash('Error');
-        // session()->flash('Error', 'حدث خطأ أثناء تحديث حالة الفاتورة');
     }
     return redirect()->route('invoices.index');
 }
@@ -548,12 +549,32 @@ public function partialPaidStatus(Request $request){
     }
 
     }
+public function printInvoice($id)
+{
+    try {
+        // $invoices = invoices::with(['section', 'invoiceDetail', 'invoiceAttachment'])->findOrFail($id);
+        $invoices = Invoices::with('section')->findOrFail($id);
+        return view('invoices.print', compact('invoices'));
+    } catch (\Throwable $th) {
+        Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
+        return redirect()->back()->with('Error', 'حدث خطأ أثناء تحميل صفحة الطباعة');
+    }
+}
+// composer require barryvdh/laravel-dompdf
+
+    // public function downloadPDF($id)
+    // {
+    //     $invoice = Invoice::with(['section','user'])->findOrFail($id);
+    //     $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+    //     return $pdf->download('invoice_'.$invoice->invoice_number.'.pdf');
+    //     // return $pdf->stream('invoice_'.$invoice->invoice_number.'.pdf');
+    // }
+
 }
 
-
-    //    public function delete($id){
+    //   public function delete($id){
     //     // return $id ;
-    //     DB::table('forms')->where('id',$id)->delete();
+    //   DB::table('forms')->where('id',$id)->delete();
     //     return redirect()->route('form');
     // }
 
@@ -567,36 +588,4 @@ public function partialPaidStatus(Request $request){
     //     return redirect()->route('form');
     // }
 
-//     public function destroy(Product $product )
-//     {
 
-//         // Product::destroy($id);
-//         $product->delete();
-//     return redirect()->route('product.create');
-//     }
-
-//     public function trashed()
-// {
-//      $product =Product::product()->first();
-//         return $product;
-//     // $products = Product::onlyTrashed()->get();
-//     // return view('product.trashed', ['products' => $products]);
-// }
-//     public function restore($id){
-//         // return $id ;
-//         Product::withTrashed()->where('id',$id)->restore();
-//         return redirect()->back();
-//     }
-
-//     public function forceDelete($id){
-//             Product::withTrashed()->where('id',$id)->forceDelete();
-//         return redirect()->back();
-//     }
-// }
-// $invoice = Invoice::find(1);
-// $invoice->delete(); // Soft Delete
-
-// $deleted = Invoice::onlyTrashed()->first(); // Get soft-deleted
-// $deleted->restore(); // Undo delete
-
-// $deleted->forceDelete(); // Permanently remove

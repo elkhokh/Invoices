@@ -23,7 +23,7 @@ class UpdatePaymentMail extends Mailable
 {
     use Queueable, SerializesModels;
  public $user;
-    // protected $invoice;
+    protected $invoice;
     // protected $total;
     /**
      * Create a new message instance.
@@ -43,7 +43,6 @@ class UpdatePaymentMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            // subject: 'Update Payment Mail',
             from: new Address("Mostafa@gmail.com" , "invoices system"),
             replyTo:[
                 new Address("ahmed@gmail.com" , "Support team ahmed"),
@@ -64,7 +63,7 @@ class UpdatePaymentMail extends Mailable
             view: 'mails.payment',
             with:
             [
-                 'user' => $this->user,
+            'user' => $this->user,
             // 'invoice' => $this->invoice,
             // 'total' => $this->total,
         ],

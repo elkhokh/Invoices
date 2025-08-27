@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Mail\WelcomeUserMail;
+use App\Mail\UpdatePaymentMail;
 use Illuminate\Validation\Rules;
 use App\Http\Controllers\Controller;
-use App\Mail\UpdatePaymentMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -48,10 +49,10 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
-        Mail::to($user->email)->send(new UpdatePaymentMail($user));
+   // event(new Registered($user));
+        // Mail::to($user->email)->send(new UpdatePaymentMail($user));
         // Mail::to($user->email)->queue(new WelcomeUserMail($user));
-        Auth::login($user);
+        // Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
     }

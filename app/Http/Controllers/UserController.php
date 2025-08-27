@@ -66,34 +66,37 @@ public function index(): View
 
     /**
      * Store a newly created resource in storage.
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate(User::validation());
-        $input = $request->all();
-        $input['password'] = Hash::make($request->password);
-        try {
+     */public function store(StoreUserRequest $request): RedirectResponse
+{
+    $input = $request->all();
+    $input['password'] = Hash::make($request->password);
 
-                DB::beginTransaction();
-            $user = User::query()->create([
-                'name' => $input['name'],
-                'email' => $input['email'],
-                'password' => $input['password'],
-                'status' => $input['status'],
-            ]);
-//            dd($request->roles_name);
-            foreach ($request['roles_name'] as $role){
-                $user->assignRole($role);
-            }
+    try {
+        DB::beginTransaction();
 
-                DB::commit();
-            return redirect()->route('users.index')
-                ->with('success', 'تم إنشاء المستخدم بنجاح');
-        }catch (\Exception $e) {
-            return redirect()->route('users.create')
-                ->withErrors('error', 'خطأ في إنشاء المستخدم. يرجي إعادة المحاولة');
+        $user = User::query()->create([
+            'name'     => $input['name'],
+            'email'    => $input['email'],
+            'password' => $input['password'],
+            'status'   => $input['status'],
+        ]);
+
+        // لو فيه أدوار
+        foreach ($request->roles_name as $role) {
+            $user->assignRole($role);
         }
+
+        DB::commit();
+
+        return redirect()->route('users.index')
+            ->with('success', 'تم إنشاء المستخدم بنجاح');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->route('users.create')
+            ->withErrors(['error' => 'خطأ في إنشاء المستخدم. يرجي إعادة المحاولة']);
     }
+}
+
 
     /**
      * Display the specified resource.
