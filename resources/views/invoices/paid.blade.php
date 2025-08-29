@@ -128,7 +128,6 @@
                     <i class="fas fa-edit text-primary"></i> تعديل الفاتورة
                 </button>
             </form>
-
             {{-- حذف الفاتورة --}}
             <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST"
                 onsubmit="return confirm('هل أنت متأكد من الحذف؟');">

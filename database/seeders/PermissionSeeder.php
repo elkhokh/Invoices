@@ -16,54 +16,54 @@ class PermissionSeeder extends Seeder
 
 $permissions = [
             'show-index',
-
+//file
+            'show-roles',
+//button
             'create-role',
             'edit-role',
             'delete-role',
-            'show-roles',
-
-
+//file
+            'show-users',
+//button
             'create-user',
             'edit-user',
             'delete-user',
-            'show-users',
-
-            'print-invoice',
-            'view-invoice',
+//files
+            'index-invoice',
+            'paid-invoice',
+            'unpaid-invoice',
+            'partpaid-invoice',
+            'archive-invoice',
+//button
             'show-invoice',
             'create-invoice',
             'edit-invoice',
             'delete-invoice',
-            'show-deleted-invoice',
+            'archive-invoice',
             'edit-status-invoice',
             'excel-import-invoice',
-            'add-attachments-invoice',
-            'delete-attachments',
-
+            'print-invoice',
+//attachments
             'add-image-invoice',
             'delete-image-invoice',
             'show-image-invoice',
-
-
+            'download-image-invoice',
+//button
             'create-product',
             'edit-product',
             'delete-product',
+//file
             'show-product',
-
-
+//button
             'create-section',
             'edit-section',
             'delete-section',
+//file
             'show-section',
-
-
-
-
         ];
 
 foreach ($permissions as $permission) {
-
-Permission::create(['name' => $permission]);
+Permission::firstOrCreate(['name' => $permission]);
 }
 
 

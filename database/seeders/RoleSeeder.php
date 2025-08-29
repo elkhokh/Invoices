@@ -30,7 +30,7 @@ class RoleSeeder extends Seeder
 
         // user
         $user->givePermissionTo([
-            'view-invoice'
+            // 'view-invoice'
         ]);
     }
 }

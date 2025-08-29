@@ -76,10 +76,10 @@
         <div class="card-header pb-0">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
-        {{-- @can('اضافة منتج') --}}
+        @can('delete-product')
         <a class="modal-effect btn btn-outline-primary" style="min-width: 300px;" data-effect="effect-scale" data-toggle="modal" href="#exampleModal">
         إضافة منتج </a>
-            {{-- @endcan --}}
+            @endcan
                 </div>
 
                 <form action="{{ route('products.index') }}" method="GET" class="d-flex" style="min-width: 300px;">
@@ -117,8 +117,12 @@
                                     <td>{{ $product->created_at->format('Y-m-d') }}</td>
                                     <td>{{ $product->created_by}}</td>
                                     <td>
+     @can('edit-product')
         <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editModal{{ $product->id }}">تعديل</button>
+        @endcan
+        @can('delete-product')
         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $product->id }}">حذف</button>
+        @endcan
     </td>
             </tr>
 

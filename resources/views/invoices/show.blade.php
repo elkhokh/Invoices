@@ -76,7 +76,7 @@
                                 <div class="panel-body tabs-menu-body main-content-body-right border">
                                     <div class="tab-content">
 
-    
+
                                         <div class="tab-pane active" id="tab4">
                                             <div class="table-responsive mt-15">
                                                 <table class="table table-striped" style="text-align:center">
@@ -177,28 +177,27 @@
                                                 </table>
                                             </div>
                                         </div>
-
-                                        {{-- TAB 6: المرفقات --}}
                                         <div class="tab-pane" id="tab6">
                                             <div class="card card-statistics">
                                                 <div class="card-body">
                                                     <p class="text-danger">* صيغة المرفق: jpeg, jpg, png</p>
                                                     <h5 class="card-title">اضافة مرفقات</h5>
-
-                                                    <form method="POST" action="{{ route('attachment.store') }}" enctype="multipart/form-data">
+ @can('add-image-invoice')
+                    <form method="POST" action="{{ route('attachment.store') }}" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="custom-file">
-                                                            <input type="file" name="file_name" class="custom-file-input" id="customFile">
-                                                            <input type="hidden" name="invoice_number" value="{{ $invoices->invoice_number }}">
-                                                            <input type="hidden" name="invoice_id" value="{{ $invoices->id }}">
-                                                            <label class="custom-file-label" for="customFile">حدد المرفق</label>
-                                                            @error('file_name')
-                                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        <br><br>
-                                                        <button type="submit" class="btn btn-primary btn-sm">تأكيد</button>
+                            <input type="file" name="file_name" class="custom-file-input" id="customFile">
+                            <input type="hidden" name="invoice_number" value="{{ $invoices->invoice_number }}">
+                            <input type="hidden" name="invoice_id" value="{{ $invoices->id }}">
+                        <label class="custom-file-label" for="customFile">حدد المرفق</label>
+                            @error('file_name')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
+                            </div>
+                <br><br>
+                <button type="submit" class="btn btn-primary btn-sm">تأكيد</button>
                                                     </form>
+                @endcan
                                                 </div>
 
                                                 <br>
@@ -224,38 +223,40 @@
                                                                     <td>{{ $attachment->created_by ?? '-' }}</td>
                                                                     <td>{{ $attachment->created_at ? $attachment->created_at->format('Y-m-d H:i') : '-' }}</td>
                                                                     <td>
-                                                                        <a class="btn btn-outline-success btn-sm"
-                                                                           href="{{ asset('storage/invoices_file/' . $attachment->file_name) }}"
-                                                                           target="_blank" role="button"><i class="fas fa-eye"></i>&nbsp; عرض</a>
 
-                                                                        <a class="btn btn-outline-info btn-sm"
-                                                                           href="{{ asset('storage/invoices_file/' . $attachment->file_name) }}"
-                                                                           download="{{ $attachment->file_name }}" role="button">
-                                                                            <i class="fas fa-download"></i>&nbsp; تحميل
-                                                                        </a>
-
-                                                                        {{-- زر حذف يفتح مودال --}}
-                                                                        <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $attachment->id }}">حذف</button>
-                                                                    </td>
+        @can('show-image-invoice')
+                        <a class="btn btn-outline-success btn-sm"
+                    href="{{ asset('storage/invoices_file/' . $attachment->file_name) }}"
+            target="_blank" role="button"><i class="fas fa-eye"></i>&nbsp; عرض</a>
+            @endcan
+    @can('download-image-invoice')
+        <a class="btn btn-outline-info btn-sm" href="{{ asset('storage/invoices_file/' . $attachment->file_name) }}"
+            download="{{ $attachment->file_name }}" role="button"><i class="fas fa-download"></i>&nbsp; تحميل
+            </a>
+    @endcan
+ @can('delete-image-invoice')
+    <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $attachment->id }}">حذف</button>
+    @endcan
+                    </td>
                                                                 </tr>
 
-                                                                {{-- Modal حذف مرفق --}}
-                                                                <div class="modal fade" id="deleteModal{{ $attachment->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                                                    <div class="modal-dialog" role="document">
-                                                                        <form action="{{ route('attachment.destroy', $attachment->id) }}" method="POST">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            <div class="modal-content">
-                                                                                <div class="modal-header">
-                                                                                    <h5 class="modal-title">حذف المرفق</h5>
-                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                                                </div>
-                                                                                <div class="modal-body">
-                                                                                    <p>هل أنت متأكد من حذف المرفق: <strong>{{ $attachment->file_name }}</strong>؟</p>
+
+                    <div class="modal fade" id="deleteModal{{ $attachment->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                        <form action="{{ route('attachment.destroy', $attachment->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <div class="modal-content">
+                                            <div class="modal-header">
+                           <h5 class="modal-title">حذف المرفق</h5>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                            </div>
+                                <div class="modal-body">
+        <p>هل أنت متأكد من حذف المرفق: <strong>{{ $attachment->file_name }}</strong>؟</p>
                                                                                 </div>
                                                                                 <div class="modal-footer">
-                                                                                    <button type="submit" class="btn btn-danger">حذف</button>
-                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                            <button type="submit" class="btn btn-danger">حذف</button>
+<button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
                                                                                 </div>
                                                                             </div>
                                                                         </form>

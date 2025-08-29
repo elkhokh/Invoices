@@ -51,7 +51,7 @@
             </button>
         </div>
     @endif
-    
+
     @if(session()->has('error'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
             <strong>{{ session('Add') }}</strong>
@@ -71,15 +71,16 @@
 </div>
 
 
-
 <div class="col-xl-12">
     <div class="card mg-b-20">
         <div class="card-header pb-0">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
+                    {{-- @can('create-section') --}}
         <a class="modal-effect btn btn-outline-primary" style="min-width: 300px;" data-effect="effect-scale" data-toggle="modal" href="#modaldemo8">
         إضافة قسم
         </a>
+        {{-- @endcan --}}
                 </div>
                 <form action="{{ route('sections.index') }}" method="GET" class="d-flex" style="min-width: 300px;">
                     <input type="text" name="search" class="form-control" placeholder="ابحث عن قسم..." value="{{  $search  }}">
@@ -114,8 +115,12 @@
                         <td>{{ $section->created_by}}</td>
                                 {{-- <td>{{ $section?->user?->name}}</td> --}}
     <td>
+           {{-- @can('edit-section') --}}
         <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editModal{{ $section->id }}">تعديل</button>
+        {{-- @endcan --}}
+           @can('delete-section')
         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $section->id }}">حذف</button>
+        @endcan
     </td>
             </tr>
 

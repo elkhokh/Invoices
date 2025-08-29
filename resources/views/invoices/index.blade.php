@@ -125,17 +125,19 @@
             <div class="card mg-b-20">
         <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap">
     <div class="mb-2">
-         {{-- @can('اضافة فاتورة') --}}
+
+
+        @can('create-invoice')
         <a href="{{ route('invoices.create') }}" class="btn btn-success">
             <i class="fas fa-plus"></i>&nbsp; اضافة فاتورة
         </a>
-        {{-- @endcan --}}
+        @endcan
 
-        {{-- @can('تصدير EXCEL') --}}
+       @can('excel-import-invoice')
         <a href="{{ route('invoices.export') }}" class="btn btn-info">
             <i class="fas fa-file-download"></i>&nbsp; تصدير Excel
         </a>
-        {{-- @endcan --}}
+        @endcan
     </div>
 
     {{-- Search Form --}}
@@ -204,60 +206,67 @@
         </button>
         <div class="dropdown-menu tx-13">
 
+            {{--
+            'show-invoice',
+            'print-invoice',
+//attachments
+            'add-image-invoice',
+            'delete-image-invoice',
+            'show-image-invoice',
+            'download-image-invoice', --}}
+
+            @can('edit-invoice')
             <form action="{{ route('invoices.edit', $invoice->id) }}" method="GET">
                 @csrf
                 <button type="submit" class="dropdown-item">
                     <i class="fas fa-edit text-primary"></i> تعديل الفاتورة
                 </button>
             </form>
-
+            @endcan
+            @can('archive-invoice')
             <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST"
-              onsubmit="return confirm('هل تريد نقل الفاتورة إلى الأرشيف؟');">
+            onsubmit="return confirm('هل تريد نقل الفاتورة إلى الأرشيف؟');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="dropdown-item text-warning">
                     <i class="fas fa-exchange-alt"></i> ارشفة الفاتورة
                 </button>
             </form>
-
-
-            {{-- <form action="{{ route('invoices.getFileStatus', $invoice->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="dropdown-item">
-                    <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
-                </button>
-            </form> --}}
+            @endcan
+        @can('edit-status-invoice')
             <form action="{{ route('invoices.getFileStatus', $invoice->id) }}" method="GET">
     <button type="submit" class="dropdown-item">
         <i class="text-success fas fa-money-bill"></i> تغيير حالة الدفع
     </button>
                     </form>
+                    @endcan
 
+            @can('delete-invoice')
             <form action="{{ route('invoices.forceDelete', $invoice->id) }}" method="POST"
                 onsubmit="return confirm('هل تريد حذف الفاتورة  نهائيا');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="dropdown-item text-danger">
                     <i class="fas fa-trash-alt"></i> حذف الفاتورة
-                </button>
+                </button></form>
+                @endcan
 
-            </form>
-
+                @can('show-invoice')
             <form action="{{ route('invoices.show', $invoice->id) }}" method="GET">
                 @csrf
                 <button type="submit" class="dropdown-item">
                     <i class="fas fa-eye text-info"></i> رؤية تفاصيل الفاتورة
                 </button>
             </form>
-
-
+@endcan
+ @can('print-invoice')
             <form action="{{ route('invoices.print', $invoice->id) }}" method="POST" target="_blank"  class="no-print">
                 @csrf
                 <button type="submit" class="dropdown-item">
                     <i class="text-success fas fa-print"></i> طباعة الفاتورة
                 </button>
             </form>
-
+@endcan
             {{-- <a href="{{ route('invoices.print', $invoice->id) }}" target="_blank" class="dropdown-item">
     <i class="text-success fas fa-print"></i> طباعة الفاتورة
 </a> --}}

@@ -25,7 +25,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreInvoiceRequest;
 use Illuminate\Support\Facades\Notification;
-
+use Illuminate\Routing\Controllers\Middleware;
 // use Symfony\Component\Translation\CatalogueMetadataAwareInterface;
 
 class InvoicesController extends Controller
@@ -33,6 +33,20 @@ class InvoicesController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+// public function __construct()
+// {
+//     // $this->middleware('auth');
+//     $this->middleware('permission:view-invoice')->only(['index']);
+//     $this->middleware('permission:show-invoice')->only(['show']);
+//     $this->middleware('permission:create-invoice')->only(['create', 'store']);
+//     $this->middleware('permission:edit-invoice')->only(['edit', 'update']);
+//     $this->middleware('permission:delete-invoice')->only(['destroy']);
+//     $this->middleware('permission:show-deleted-invoice')->only(['archive', 'restore', 'forceDelete']);
+//     $this->middleware('permission:excel-import-invoice')->only(['export']);
+//     $this->middleware('permission:print-invoice')->only(['printInvoice']);
+//     $this->middleware('permission:edit-status-invoice')->only(['getFileStatus', 'updateStatus']);
+// }
     public function index(Request $request)
     {
         // $invoices = invoices::with('section')->orderBy('id','asc')->paginate(7);
@@ -141,9 +155,8 @@ InvoiceDetail::create([
                 'created_by' => Auth::user()->name,
             ]);
             }
-            $users = User::first();
-            Notification::send($users, new AddInvoices($invoice));
-            // Notification::send($user, new AddInvoices($invoice));
+            // $users = User::first();
+            // Notification::send($users, new AddInvoices($invoice));
 
         session()->flash('Add');
         return redirect()->back();
@@ -563,7 +576,6 @@ public function printInvoice($id)
         return redirect()->back()->with('Error', 'حدث خطأ أثناء تحميل صفحة الطباعة');
     }
 }
-
 
     public function export()
     {
