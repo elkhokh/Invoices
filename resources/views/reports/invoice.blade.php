@@ -47,7 +47,7 @@
     <div class="col-xl-12">
         <div class="card mg-b-20">
             <div class="card-header pb-0">
-                <form action="{{ route('reports.search') }}"  method="POST" role="search" autocomplete="off">
+                <form action="{{ route('reportsin.search') }}"  method="POST" role="search" autocomplete="off">
                     @csrf
 
                     <div class="col-lg-3">

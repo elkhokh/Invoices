@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\InvoiceAttachment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -34,18 +33,21 @@ Route::delete('invoices/force/{id}', [InvoicesController::class, 'forceDelete'])
 Route::patch('invoices/restore/{id}', [InvoicesController::class, 'restore'])->name('invoices.restore');
 Route::post('invoices/print/{id}', [InvoicesController::class, 'printInvoice'])->name('invoices.print');
 Route::get('invoices/export/', [InvoicesController::class, 'export'])->name('invoices.export');
-Route::get('reports/index', [InvoicesReportsController::class ,'index'])->name('reports.index');
-Route::post('reports/search', [InvoicesReportsController::class ,'search'])->name('reports.search');
+Route::get('reportsin/index', [InvoicesReportsController::class ,'index'])->name('reportsin.index');
+Route::post('reportsin/search', [InvoicesReportsController::class ,'search'])->name('reportsin.search');
+Route::get('reportscu/index', [CustomersReportsController::class ,'index'])->name('reportscu.index');
+Route::post('reportscu/search', [CustomersReportsController::class ,'search'])->name('reportscu.search');
+
+
+
+//Resources Routes
 Route::resources([
     'attachment' => InvoiceAttachmentController::class,
     'detail'     => InvoiceDetailController::class,
     'sections'   => SectionsController::class,
     'products'   => ProductController::class,
     'invoices'   => InvoicesController::class,
-
-    'customersReports'   => CustomersReportsController::class,
 ]);
-
 
 Route::get('/dashboard', function () {
     return view('dashboard');

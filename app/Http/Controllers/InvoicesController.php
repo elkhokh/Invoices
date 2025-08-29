@@ -99,7 +99,7 @@ public function create()
         //Laravel Response system best than json_encode();
         return response()->json($products);
     } catch (\Throwable $th) {
-        Log::channel('invoice')->error("Product Fetch Error: " . $th->getMessage() . ' in ' . $th->getFile() . ' on line ' . $th->getLine());
+        Log::channel('invoice')->error("Product Fetch Error: " . $th->getMessage() . $th->getFile() . $th->getLine());
         abort(500);
     }
     }
