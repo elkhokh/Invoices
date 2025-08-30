@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\SectionsController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\InvoicesReportsController;
 use App\Http\Controllers\CustomersReportsController;
@@ -49,9 +50,13 @@ Route::resources([
     'invoices'   => InvoicesController::class,
 ]);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
 
 Route::group(['middleware' => ['auth']], function() {
     // Route::resources([
@@ -80,7 +85,6 @@ Route::get('/{page}', [AdminController::class, 'index']);
 
 
 
-
 /************************ ********************************/
 ////expect  route run all routes but are exist in expect()
 // Route::resource('mostafa',InvoicesController::class)->expect(['show','store']);
@@ -94,5 +98,25 @@ Route::get('/{page}', [AdminController::class, 'index']);
 // Route::get('test',function(){
 //     // return view('test');
 //     return response()->json(['stauts'=>'mostafa']);
+// });
+
+// Route::get("test-posts" , function(){
+//     $res = Http::get("https://jsonplaceholder.typicode.com/posts");
+//     if($res->successful()){
+//         $posts = $res->json();
+//         // request success
+//     } elseif($res->clientError()){
+//     } elseif($res->serverError()){
+//     }
+//     return response()->json($posts);
+// });
+
+// Route::post("add-post" , function(){
+//     $res = Http::post("https://jsonplaceholder.typicode.com/posts",[
+//         "title" => "first title with api",
+//         "content" => "first content with api",
+//         "userId" => 10,
+//     ]);
+//     return $res->json();
 // });
 /************************ ********************************/
