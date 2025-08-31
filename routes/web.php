@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Session\Middleware\StartSession;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\InvoicesReportsController;
 use App\Http\Controllers\CustomersReportsController;
@@ -38,7 +39,36 @@ Route::get('reportsin/index', [InvoicesReportsController::class ,'index'])->name
 Route::post('reportsin/search', [InvoicesReportsController::class ,'search'])->name('reportsin.search');
 Route::get('reportscu/index', [CustomersReportsController::class ,'index'])->name('reportscu.index');
 Route::post('reportscu/search', [CustomersReportsController::class ,'search'])->name('reportscu.search');
+Route::get('markedAll', [InvoicesController::class ,'markedAll'])->name('markedAll');
 
+// Route::get('/notifications/unread', function () {
+//     $user = auth()->user();
+//     return response()->json([
+//         'count' => $user->unreadNotifications->count(),
+//         'notifications' => $user->unreadNotifications->map(function ($notification) {
+//             return [
+//                 'id'    => $notification->data['id'],
+//                 'title' => $notification->data['title'],
+//                 'user'  => $notification->data['user'],
+//                 'time'  => $notification->created_at->diffForHumans(),
+//             ];
+//         }),
+//     ]);
+// })->name('notifications.unread');
+Route::get('/notifications/unread', function () {
+    $user = auth()->user();
+    return response()->json([
+        'count' => $user->unreadNotifications->count(),
+        'notifications' => $user->unreadNotifications->map(function ($notification) {
+            return [
+                'id'    => $notification->data['id'],
+                'title' => $notification->data['title'],
+                'user'  => $notification->data['user'],
+                'time'  => $notification->created_at->diffForHumans(),
+            ];
+        }),
+    ]);
+})->name('notifications.unread')->withoutMiddleware([StartSession::class]);
 
 
 //Resources Routes
@@ -49,6 +79,7 @@ Route::resources([
     'products'   => ProductController::class,
     'invoices'   => InvoicesController::class,
 ]);
+
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');

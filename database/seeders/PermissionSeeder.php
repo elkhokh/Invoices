@@ -60,6 +60,11 @@ $permissions = [
             'delete-section',
 //file
             'show-section',
+
+            'notification',
+            'report_invoices',
+            'report_customers',
+
         ];
 
 foreach ($permissions as $permission) {

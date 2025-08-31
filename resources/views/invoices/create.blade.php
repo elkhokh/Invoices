@@ -34,15 +34,6 @@
 @endif
   <div class="row">
     <div class="container mt-3">
-
-    {{-- @if(session()->has('Add'))
-        <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
-            <strong>{{ session('Add') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    @endif --}}
     @if(session()->has('Error'))
         <div class="alert alert-success alert-dismissible fade show fs-5 w-75 mx-auto text-center" role="alert">
             <strong>{{ session('Add') }}</strong>
@@ -269,13 +260,7 @@
         }).val();
 
     </script>
-{{-- <script>
-    @if ($errors->any())
-        $(document).ready(function () {
-            $('#exampleModal').modal('show');
-        });
-    @endif
-</script> --}}
+
     <script>
         $(document).ready(function() {
             // when he select from   name = section

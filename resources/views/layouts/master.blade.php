@@ -16,10 +16,10 @@
 			<img src="{{URL::asset('assets/img/loader.svg')}}" class="loader-img" alt="Loader">
 		</div>
 		<!-- /Loader -->
-		@include('layouts.main-sidebar')		
+		@include('layouts.main-sidebar')
 		<!-- main-content -->
 		<div class="main-content app-content">
-			@include('layouts.main-header')			
+			@include('layouts.main-header')
 			<!-- container -->
 			<div class="container-fluid">
 				@yield('page-header')
@@ -27,6 +27,42 @@
 				@include('layouts.sidebar')
 				@include('layouts.models')
             	@include('layouts.footer')
-				@include('layouts.footer-scripts')	
+				@include('layouts.footer-scripts')
 	</body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+function loadNotifications() {
+    $.get("{{ route('notifications.unread') }}", function(data) {
+        $("#notifications_count").text("لديك " + data.count + " إشعار غير مقروء");
+        let list = $("#unreadNotifications");
+        list.empty();
+        if (data.count > 0) {
+            data.notifications.forEach(function (n) {
+                let item = `
+                    <a class="d-flex p-3 border-bottom"
+                    href="/invoices/${n.id}">
+                        <div class="notifyimg bg-pink">
+                            <i class="la la-file-alt text-white"></i>
+                        </div>
+                        <div class="mr-3">
+                            <h5 class="notification-label mb-1">
+                                ${n.title} - ${n.user}
+                            </h5>
+                            <div class="notification-subtext">${n.time}</div>
+                        </div>
+                    </a>`;
+                list.append(item);
+            });
+        } else {
+            list.html('<div class="p-3 text-center text-muted">لا توجد إشعارات جديدة</div>');
+        }
+    });
+}
+
+loadNotifications();
+setInterval(loadNotifications, 5000);
+</script>
+

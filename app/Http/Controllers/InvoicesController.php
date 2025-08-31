@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\invoices;
 use App\Models\sections;
+use App\Notifications\AddInvoicesNew;
 use Illuminate\Http\Request;
 // use PhpParser\Node\Stmt\Catch_;
 use App\Models\InvoiceDetail;
@@ -159,17 +160,21 @@ class InvoicesController extends Controller
             // $users = User::first();
             // Notification::send($users, new AddInvoices($invoice));
 
-            session()->flash('Add');
-            return redirect()->back();
-            // return view('invoices.index');
+            // $users = Auth::user();
+            $users = User::role('owner')->get();
+            // $users = User::all();
+            Notification::send($users, new AddInvoicesNew($invoice));
+
+
+            // session()->flash('Add');
+            // return redirect()->back();
+            return redirect()->route('invoices.index')->with('done','');
 
         } catch (\Exception $th) {
             Log::channel("invoice")->error($th->getMessage() . $th->getFile() . $th->getLine());
             return redirect()->back()->with('Error', 'حدث خطأ أثناء حفظ الفاتورة ');
         }
 
-        // "file_name":{}
-        // return $request ;
     }
 
     // public function store(Request $request)
@@ -603,7 +608,15 @@ class InvoicesController extends Controller
         return Excel::download(new InvoicesExport, 'invoices.xlsx');
     }
 
+    public function markedAll()
+    {
+        $userUnreadNotification = auth()->user()->unreadNotifications;
 
+        if ($userUnreadNotification) {
+            $userUnreadNotification->markAsRead();
+            return back();
+        }
+    }
 
 
 
